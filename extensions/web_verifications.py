@@ -1,3 +1,5 @@
+import re
+
 from playwright.sync_api import Locator, expect
 from smart_assertions import soft_assert, verify_expectations
 import allure
@@ -45,10 +47,12 @@ class WebVerify:
     @staticmethod
     @allure.step("Verify that the element contains the expected text")
     def contain_text(element: Locator, expected_text: str):
+         """
+        Verifies that the text of the element contains the expected text,
+        ignoring differences in uppercase/lowercase.
         """
-        Verifies that the text of the element contains the expected text.
-        """
-        expect(element).to_contain_text(expected_text)
+        # regex case-insensitive
+         expect(element).to_contain_text(re.compile(expected_text, re.IGNORECASE))
     
     @staticmethod
     @allure.step("Verify that the element has the expected value")

@@ -1,5 +1,4 @@
-SAUCE_URL = "https://www.saucedemo.com/"
-USER_NAME = "standard_user"
-PASSWORD = "secret_sauce"
-LOGIN_ERROR_MESSAGE = "Epic sadface"
-EXPECTED_HOME_HEADER = "Products"
+SAUCE_URL = "https://yarusd.github.io/movie-theater/"
+EXPECTED_TOTAL_MOVIES = 60
+EXPECTED_GENRE_MOVIE_COUNT = [60,9,6,12,10,7,6,5,3,2]
+EXPECTED_SEARCH_KEYWORD = "flow"
