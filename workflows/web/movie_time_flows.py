@@ -36,15 +36,16 @@ class MovieFlows:
         return UIActions.count(self.all_movies.movie_title)
 
     @allure.step("Get expected categoy count")
-    def get_expected_genre_category_count(self,expected_category_count:list):
+    def get_expected_genre_category_count(self,expected_category_count:list) -> Locator:
         self.all_movies.all_movies_header.click()
         for movie in expected_category_count:
             pass
         return movie
     
+
     @allure.step("Enter keyword to search bar")
     def search_a_movie_name(self,text:str) -> None:
-        self.all_movies.all_movies_header.click()     
+        UIActions.force_click(self.all_movies.all_movies_header)     
         UIActions.update_text(self.all_movies.movie_search_bar,text)
         UIActions.click(self.all_movies.search_button)
 
@@ -54,38 +55,86 @@ class MovieFlows:
         for search in search_results_list:
             pass
         return search
-         
+    
+    @allure.step("Choose sorting method")
+    def choose_sorting_method(self, option:str) -> None:
+        self.all_movies.all_movies_header.click()
+        self.all_movies.sorting_selector.select_option(option)
+
+    @allure.step("Get rating list")
+    def get_rating_list(self) -> list:
+        rating_list = self.all_movies.movie_rating.all_inner_texts()
+        list = []
+        for score in rating_list:
+            if score == "Unrated":
+                pass
+            else:
+                score = float(score.replace("★",""))
+                list.append(score)
+        return(list)
+
+    @allure.step("Get title list")
+    def get_title_list_text(self) -> list:
+        title_list = self.all_movies.movie_title.all_inner_texts()
+        return title_list
+
+    @allure.step("Get year list") 
+    def get_year_list(self) -> list:
+        year_list = self.all_movies.movie_year.all_inner_texts()
+        return year_list
+
+    @allure.step("Get top movie")  
+    def get_top_movie(self,list:list) -> str:
+        top = max(list)
+        return top
+
+    @allure.step("Search by actor name and return results count")
+    def search_by_actor_and_get_count(self, actor_name: str) -> int:
+        self.all_movies.all_movies_header.click()
+        UIActions.update_text(self.all_movies.movie_search_bar, actor_name)
+        UIActions.click(self.all_movies.search_button)
+        self.page.wait_for_timeout(1000)
+        return self.all_movies.movie_title.count()  
+    
+
+    @allure.step("Search category name in search bar and return count")
+    def search_category_in_search_bar_and_get_count(self, category_name: str) -> int:
+        self.all_movies.all_movies_header.click()
+        UIActions.update_text(self.all_movies.movie_search_bar, category_name)
+        UIActions.click(self.all_movies.search_button)
+        self.page.wait_for_timeout(1000)
+        return self.all_movies.movie_title.count()
+
+  
+
+    
+
+    
+            
+
+            
+            
+       
+
+            
+        # top_score = self.all_movies.movie_rating.first.inner_text()
+        
+
+
+        
+
+    
+
+
+  
+  
+    
+
+
+            
+
+        
       
         
 
 
-
-
-      
-        
-
-
-
-
-
-    @allure.step("Sign in:")
-    def sign_in(self,user_name:str,password:str) -> None:
-        UIActions.update_text(self.login.user_name_field,user_name)
-        UIActions.update_text(self.login.password_field,password)
-        UIActions.click(self.login.submit_button)
-
-    @allure.step("Navigte to:")
-    def navigate_to(self,url:str)->None:
-        UIActions.navigate_to(self.page,url)
-
-    
-    @allure.step("Get Home Header")
-    def get_home_header(self)->str:
-        return UIActions.get_text(self.home.header)
-    
-    @allure.step("login with ddt:")
-    def verify_ddt_flow(self,expected_status)->None: 
-        if expected_status == "success":
-            WebVerify.text(self.home.header,EXPECTED_HOME_HEADER)
-        else:
-            WebVerify.contain_text(self.login.error_message)

@@ -16,7 +16,7 @@ class WebVerify:
 
     @staticmethod
     @allure.step("Verify String")
-    def strings_are_equal(actual:str,expected:str,message=None):
+    def strings_are_equal(actual:str,expected:str,message:str =None):
         assert actual == expected,message
 
 
@@ -53,6 +53,18 @@ class WebVerify:
         """
         # regex case-insensitive
          expect(element).to_contain_text(re.compile(expected_text, re.IGNORECASE))
+
+    @staticmethod
+    @allure.step("Verify that a list of strings contains the expected text")
+    def contain_text_list(elements: list[str], expected_text: str):
+        """
+        Verifies that at least one string in the list contains the expected text,
+        ignoring differences in uppercase/lowercase.
+        If the list is empty, the assertion fails.
+        """
+        combined_text = " ".join(elements)  # מחברים את כל התוצאות למחרוזת אחת
+        if not re.search(expected_text, combined_text, re.IGNORECASE):
+            raise AssertionError(f"Expected '{expected_text}' to be in '{combined_text}'")
     
     @staticmethod
     @allure.step("Verify that the element has the expected value")
@@ -61,6 +73,15 @@ class WebVerify:
         Verifies that the value of the element matches the expected value.
         """
         expect(element).to_have_value(expected_value)
+    
+    @staticmethod
+    @allure.step("Verify that list is sorted by first word (A-Z)")
+    def list_is_sorted_by_first_word(values: list[str]):
+        """
+        בודק שהרשימה ממוינת לפי המילה הראשונה בלבד (A-Z), התעלמות מה-Case
+        """
+        first_words = [v.split()[0].lower() for v in values]
+        assert first_words == sorted(first_words), f"Titles are not sorted by first word. {first_words}"
 
 
     # Soft Assertions    
@@ -73,6 +94,15 @@ class WebVerify:
         """
         actual_text = element.inner_text()
         soft_assert(actual_text == expected_text, message)
+
+    @staticmethod
+    @allure.step("Soft assertion to check if two integers are equal")
+    def soft_int(actual: int, expected: int, message:str= None):
+        """
+        Soft assertion to compare two integers.
+        Test execution will continue even if this assertion fails.
+        """
+        soft_assert(actual == expected, message)
 
     @staticmethod
     @allure.step("Soft assertion to check if the element is visible")
