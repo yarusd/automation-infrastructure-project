@@ -8,6 +8,7 @@ from extensions.web_verifications import WebVerify
 from page_objects.web.movie_time_all_movie_page import MovieTimeAllMoviesPage
 from page_objects.web.movie_time_home_page import MovieTimeHomePage
 from page_objects.web.movie_time_login_page import MovieTimeLoginPage
+from page_objects.web.movie_time_movie_page import MovieTimeMoviePage
 from utils.common_ops import extract_digits_from_text
 
 
@@ -17,25 +18,27 @@ class MovieFlows:
         self.login = MovieTimeLoginPage(page)
         self.home = MovieTimeHomePage(page)
         self.all_movies = MovieTimeAllMoviesPage(page)
+        self.movie_page = MovieTimeMoviePage(page)
 
     @allure.step("Sign in:")
-    def get_actual_now_showing_icons(self)->int:
+    def get_actual_now_showing_icons_count(self)->int:
         return  self.home.actual_now_showing_icon.count()
     
-    def get_expected_now_showing_icons(self)->int:
+    def get_expected_now_showing_icons__count(self)->int:
         return extract_digits_from_text(UIActions.get_text(self.home.expected_now_showing_icon))
     
-    def get_booking_process_in_guest_mode(self)->str:
+    def get_error_booking_process_message(self)->str:
         UIActions.click(self.home.book_now_button)
-        #return self.home.actual_booking_movie_error_message
         return self.home.actual_booking_movie_error_message
 
-    def navigate_to_movies_description(self):
+    def click_on_details_button(self) -> None:
         UIActions.click(self.home.details_button)
-        return self.home.movie_description.inner_text()
+
+    def get_movie_description(self) -> str:
+        return UIActions.get_text(self.movie_page.movie_description)
 
 
-    def fill_registration_form_valid_input(self,user_name,password,expected_status)->str:
+    def fill_registration_form_ddt(self,user_name,password,expected_status)->str:
         UIActions.click(self.home.log_in_icon)
         UIActions.update_text(self.login.email_address_field,user_name)
         UIActions.update_text(self.login.password_field,password)
@@ -47,12 +50,10 @@ class MovieFlows:
             WebVerify.visible(self.login.error_message)
             self.page.reload()
 
-
     @allure.step("Navigte to:")
     def navigate_to(self,url:str)->None:
         UIActions.navigate_to(self.page,url)
-
-    
+   
     @allure.step("Get Home Header")
     def get_home_header(self)->str:
         return UIActions.get_text(self.home.header)
@@ -63,3 +64,7 @@ class MovieFlows:
             WebVerify.text(self.home.header,EXPECTED_HOME_HEADER)
         else:
             WebVerify.contain_text(self.login.error_message,LOGIN_ERROR_MESSAGE)
+
+    
+    def click_on_Theme_Toggle(self):
+        pass

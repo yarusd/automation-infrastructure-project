@@ -15,8 +15,8 @@ class WebVerify:
     
     
     @allure.step("Verify String")
-    def strings_are_equal(actual:str,expected:str,message=None):
-        assert actual == expected,message
+    def strings_are_equal(actual:str,expected:str,message:str=None):
+        assert actual == expected,message or "EROOR - not matched"
 
 
     

@@ -8,6 +8,5 @@ class MovieTimeHomePage:
         self.book_now_button = page.locator("[class='btn sec']")
         self.actual_booking_movie_error_message = page.locator("[class='alert err']")
         self.details_button = page.locator("[data-testid='details-btn-1']")
-        self.movie_description = page.locator("[data-testid='movie-desc']")
         self.log_in_icon = page.locator("[data-testid='btn-login']")
         

@@ -21,7 +21,7 @@ class TestSauceDDT:
     #@allure.description("Validate login behavior using diverse data-driven inputs (Positive/Negative).")
     @pytest.mark.parametrize("Login_data",read_data_from_csv(LOGIN_DATA_PATH))
     def test_user_login_authentication_ddt(self,movie_time_flows:MovieFlows,Login_data):
-        movie_time_flows.fill_registration_form_valid_input(Login_data["username"], Login_data["password"],Login_data["expected_status"])
+        movie_time_flows.fill_registration_form_ddt(Login_data["username"], Login_data["password"],Login_data["expected_status"])
 
         
 
