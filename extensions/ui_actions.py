@@ -13,6 +13,8 @@ class UIActions:
     def navigate_to(page:Page,url:str):
         page.goto(url)
 
+    
+
     @staticmethod
     @allure.step("Click on element")
     def click(element: Locator, timeout: int = DEFAULT_TIMEOUT) -> None:
@@ -46,3 +48,5 @@ class UIActions:
         element.fill("")  # clear first (more stable)
         element.fill(text, timeout=timeout)
 
+
+      

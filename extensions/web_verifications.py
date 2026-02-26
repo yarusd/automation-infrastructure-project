@@ -12,11 +12,17 @@ class WebVerify:
         """
         expect(element).to_have_text(expected_text)
 
-    @staticmethod
+    
+    
     @allure.step("Verify String")
     def strings_are_equal(actual:str,expected:str,message=None):
         assert actual == expected,message
 
+
+    
+    @allure.step("Verify Values")
+    def values_are_equal(actual:float,expected:float,message=None):
+        assert actual == expected,message
 
     @staticmethod
     @allure.step("Verify that the element is visible")

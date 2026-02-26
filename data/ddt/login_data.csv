@@ -1,3 +1,12 @@
 username,password,expected_status
-standard_user,secret_sauce,success
-invalid_user,invalid_pass,failure
+user1@test.com,123456,True
+user2@test.com,123456,True
+admin@test.com,admin123,True
+locked@test.com,123456,False
+locked@test.com,,False
+user2@test.com,bhbhhb,False
+
+
+
+
+

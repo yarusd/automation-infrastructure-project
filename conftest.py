@@ -17,7 +17,7 @@ def page(playwright: Playwright, request:FixtureRequest):
     browser = get_browser(playwright,CONFIG["BROWSER_TYPE"].lower())
     context = browser.new_context(no_viewport=True)        
     page = context.new_page()
-    page.goto(SAUCE_URL)
+    page.goto(movie_time_URL)
     yield page    
     # Best practice: Close page before context
     page.close()
