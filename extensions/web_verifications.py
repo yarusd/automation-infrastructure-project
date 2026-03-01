@@ -2,6 +2,9 @@ from playwright.sync_api import Locator, expect
 from smart_assertions import soft_assert, verify_expectations
 import allure
 
+from extensions.ui_actions import UIActions
+from page_objects.web.movie_time_login_page import MovieTimeLoginPage
+
 class WebVerify:
   
     @staticmethod    
@@ -12,8 +15,17 @@ class WebVerify:
         """
         expect(element).to_have_text(expected_text)
 
-    
-    
+    @staticmethod
+    @allure.step("Verify login flow:")
+    def verify_log_in(page,login:MovieTimeLoginPage,expected_status:str)->str:
+       if expected_status == "True":
+            WebVerify.visible(login.actual_log_in_header)
+            UIActions.click(login.log_out_button)
+       else:
+            WebVerify.visible(login.error_message)
+            page.reload()
+
+
     @allure.step("Verify String")
     def strings_are_equal(actual:str,expected:str,message:str=None):
         assert actual == expected,message or "EROOR - not matched"

@@ -38,17 +38,12 @@ class MovieFlows:
         return UIActions.get_text(self.movie_page.movie_description)
 
 
-    def fill_registration_form_ddt(self,user_name,password,expected_status)->str:
+    def sign_in(self,user_name:str,password:str)->None:
         UIActions.click(self.home.log_in_icon)
         UIActions.update_text(self.login.email_address_field,user_name)
         UIActions.update_text(self.login.password_field,password)
         UIActions.click(self.login.log_in_button)
-        if expected_status == "True":
-            WebVerify.visible(self.login.actual_log_in_header)
-            UIActions.click(self.login.log_out_button)
-        else:
-            WebVerify.visible(self.login.error_message)
-            self.page.reload()
+
 
     @allure.step("Navigte to:")
     def navigate_to(self,url:str)->None:
