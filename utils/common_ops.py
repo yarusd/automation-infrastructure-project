@@ -38,3 +38,11 @@ def extract_digits_from_text(text: str) -> float:
     if not match:
         raise ValueError(f"No numeric value found in: {text}")
     return float(match.group())
+
+def get_db_categories(conn):
+    """
+    Retrieves the complete list of joke categories from the system database.
+    """
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM categories")
+    return [row[1] for row in cursor.fetchall()]

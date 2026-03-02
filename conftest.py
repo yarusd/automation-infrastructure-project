@@ -40,3 +40,14 @@ def movie_time_flows(page):
 def chuck_flows(request_context):
     return ChuckApiFlows(request_context)
 
+
+import pytest
+import sqlite3
+
+@pytest.fixture(scope="class")
+def db_connection():
+    path = "tests/api/joke_categories.db"
+    conn = sqlite3.connect(path)
+    yield conn
+    conn.close()
+

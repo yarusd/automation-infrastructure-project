@@ -63,3 +63,7 @@ class APIVerify:
             error_message = "\n".join(VerifyAPI.errors)
             VerifyAPI.errors.clear()  # Clear errors after raising
             raise AssertionError(f"Soft assertion failures:\n{error_message}")
+    
+    @staticmethod
+    def list_equals(actual_list, expected_list, message):
+        assert sorted(actual_list) == sorted(expected_list), f"{message} \nActual: {actual_list} \nExpected: {expected_list}"
