@@ -11,3 +11,6 @@ class ChuckApiFlows:
     def search_for_joke(self,query:str)->APIResponse:
         params = {"query":query}
         return self.api.get(FREE_SEARCH_RESOURCE,params)
+    
+    def get_categories(self) -> APIResponse:
+        return self.api.get("categories")
