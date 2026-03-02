@@ -29,16 +29,16 @@ The Web suite focuses on end-to-end user scenarios, UI components, and cross-bro
 
 ### 2. API Testing (10 Test Cases)
 The API suite validates the business logic, status codes, and JSON schema integrity:
-* **Get Random Joke:** Validating `200 OK` and non-empty response body.
-* **Get by Category:** Filtering resources and verifying data relevance.
-* **Resource Creation (POST):** Adding new entries and verifying persistence.
-* **Update Resource (PUT/PATCH):** Modifying existing data and checking updates.
-* **Delete Resource:** Removing data and verifying it no longer exists.
-* **Negative Testing (404):** Requesting non-existent resources.
-* **Authentication (401):** Accessing protected endpoints without a token.
-* **Schema Validation:** Ensuring the JSON structure matches the contract.
-* **Response Time:** Performance check to ensure responses are under 2 seconds.
-* **Data Integrity:** Cross-referencing API results with the SQL Database (SQLite).
+* **Get Random Joke: Validates the successful retrieval of a random joke with a 200 OK status code.
+* **Get Joke by Category: Ensures that fetching a joke from a specific category returns a valid and relevant response.
+* **Get Categories List: Verifies that the endpoint for retrieving all available joke categories is functional and accurate.
+* **Verify Free Text Search: Validates the free-text search functionality for jokes containing specific keywords.
+* **Verify Required Fields: Ensures that essential response fields, such as ID and content, are not null and maintain data integrity.
+* **Get Categories from DB: Validates the persistence layer by retrieving and verifying category data from the SQLite database.
+* **Compare Result Counts: Compares the volume of results between different search queries to ensure consistency.
+* **Verify Joke Web URL: Extracts and validates the integrity and format of the joke's direct web link.
+* **Verify Unique ID: Ensures that every joke returned by the service carries a globally unique identifier.
+* **Verify Content Uniqueness: Confirms that joke text content is unique and not duplicated across different API responses.
 
 ---
 
