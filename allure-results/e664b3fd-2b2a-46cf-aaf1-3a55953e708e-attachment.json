@@ -1,0 +1,11 @@
+{
+    "categories": [
+        "sport"
+    ],
+    "created_at": "2020-01-05 13:42:19.576875",
+    "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+    "id": "t05rcwc4q6mjhx9zuin2qq",
+    "updated_at": "2020-01-05 13:42:19.576875",
+    "url": "https://api.chucknorris.io/jokes/t05rcwc4q6mjhx9zuin2qq",
+    "value": "The US did not boycott the 1980 Summer Olympics in Moscow due to political reasons: Chuck Norris killed the entire US team with a single round-house kick during TaeKwonDo practice."
+}

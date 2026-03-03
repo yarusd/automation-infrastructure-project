@@ -1,12 +1,13 @@
 import pytest
 from pytest import FixtureRequest
-from playwright.sync_api import Playwright
+from playwright.sync_api import Page, Playwright
 
 from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from utils.common_ops import load_config
 from utils.fixture_helpers import get_browser
 from workflows.api.chuck_api_flows import ChuckApiFlows
+from workflows.web.chuck_web_flows import ChuckWebFlows
 from workflows.web.movie_time_flows import MovieFlows
 
 # Load the configuration
@@ -17,7 +18,7 @@ def page(playwright: Playwright, request:FixtureRequest):
     browser = get_browser(playwright,CONFIG["BROWSER_TYPE"].lower())
     context = browser.new_context(no_viewport=True)        
     page = context.new_page()
-    page.goto(SAUCE_URL)
+    page.goto(MOVIE_TIME_URL)
     yield page    
     # Best practice: Close page before context
     page.close()
@@ -35,8 +36,20 @@ def request_context(playwright: Playwright, request:FixtureRequest):
 def movie_time_flows(page):
     return MovieFlows(page)
 
+@pytest.fixture
+def navigate_to_all_movies_page(movie_time_flows:MovieFlows):
+    movie_time_flows.navigate_to_all_movies()
+    movie_time_flows.navigate_to_all_category()
+
 
 @pytest.fixture
 def chuck_flows(request_context):
     return ChuckApiFlows(request_context)
+
+@pytest.fixture
+def chuck_web_flows(page):
+    return ChuckWebFlows(page)
+
+
+
 

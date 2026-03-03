@@ -1,6 +1,7 @@
 import re
 
 from playwright.sync_api import Locator, expect
+import pytest
 from smart_assertions import soft_assert, verify_expectations
 import allure
 
@@ -18,6 +19,10 @@ class WebVerify:
     @allure.step("Verify String")
     def strings_are_equal(actual:str,expected:str,message:str =None):
         assert actual == expected,message
+
+
+    def numbers_are_equal(actual: int, expected: int, message: str = None):
+        assert actual == expected, "No results"
 
 
     @staticmethod
@@ -43,6 +48,30 @@ class WebVerify:
         Verifies that the number of elements matching the locator is equal to the expected count.
         """
         expect(element).to_have_count(count)
+
+
+    @staticmethod
+    @allure.step("Verifies that the number of elements matching the locator is equal to the expected count")
+    def count(element: Locator, count: str):
+        """
+        Verifies that the number of elements matching the locator is equal to the expected count.
+        """
+        expect(element).to_have_count(int(count))
+
+
+    @staticmethod
+    @allure.step("Verify element is in list and count is correct")
+    def verify_in_list(keyword: str, elements: Locator, expected_count: str):
+        elements_list = elements.all_inner_texts()
+
+        assert len(elements_list) == int(expected_count), \
+            f"List - {len(elements_list)} count does not match expected count {int(expected_count)}"
+
+        #Perform this test as well, only if the len of the list is as expected
+        result = all(keyword.lower() in item.lower() for item in elements_list)
+        assert result ,f"{keyword} was not found in all list items - {elements_list}"
+        
+
 
     @staticmethod
     @allure.step("Verify that the element contains the expected text")
@@ -73,6 +102,7 @@ class WebVerify:
         Verifies that the value of the element matches the expected value.
         """
         expect(element).to_have_value(expected_value)
+    
     
     @staticmethod
     @allure.step("Verify that list is sorted by first word (A-Z)")
@@ -118,6 +148,17 @@ class WebVerify:
     def soft_all():
         """Raises all collected assertion errors at once."""
         verify_expectations()
+
+    @staticmethod
+    @allure.step("Verify all elements contain: {expected_text}")
+    def all_elements_contain_text(locator: Locator, expected_text: str):
+        # המתן שהאלמנטים יהיו גלויים
+        locator.first.wait_for(state="visible")
+        
+        titles = locator.all_text_contents()
+        for title in titles:
+            assert expected_text.lower() in title.lower(), \
+                f"Expected '{expected_text}' to be in '{title}'"
 
 
 

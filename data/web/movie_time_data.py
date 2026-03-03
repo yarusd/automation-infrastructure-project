@@ -1,16 +1,12 @@
-SAUCE_URL = "https://yarusd.github.io/movie-theater/"
-EXPECTED_TOTAL_MOVIES = 60
+MOVIE_TIME_URL = "https://yarusd.github.io/movie-theater/"
 EXPECTED_GENRE_MOVIE_COUNT = [60,9,6,12,10,7,6,5,3,2]
-SEARCH_KEYWORD = "flow"
 SORT_BY_RATING = "rating"
 SORT_BY_TITLE = "title"
 SORT_BY_YEAR ="year"
 TOP_SCORE = 8.7
 RECENT_YEAR = "2025"
-ACTOR_NAME = "Florence Pugh"
-EXPECTED_ACTOR_SEARCH_COUNT = 1
-SEARCH_CATEGORY = "action"
-EXPECTED_CATEGORY_SEARCH_COUNT = "8"
+
+
 
 
 

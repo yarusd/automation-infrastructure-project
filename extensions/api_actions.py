@@ -55,6 +55,8 @@ class APIActions:
         response = self.request_context.delete(url, headers=headers)
         self._log_response(response)  # Log the response
         return response
+    
+    
 
 
     def _log_response(self, response):
