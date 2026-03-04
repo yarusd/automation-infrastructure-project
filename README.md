@@ -48,7 +48,5 @@ The project utilizes **Allure Reports** to provide a clear, visual representatio
 * Screenshots of failed Web tests.
 * Detailed request/response logs for API tests.
 * Severity levels and execution trends.
-
-## 🚀 How to Run
    ```bash
    git clone [https://github.com/your-username/your-project.git](https://github.com/your-username/your-project.git)
