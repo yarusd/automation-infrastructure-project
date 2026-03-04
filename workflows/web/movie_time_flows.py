@@ -9,7 +9,10 @@ from page_objects.web.movie_time_all_movie_page import MovieTimeAllMoviesPage
 from page_objects.web.movie_time_home_page import MovieTimeHomePage
 from page_objects.web.movie_time_login_page import MovieTimeLoginPage
 from page_objects.web.movie_time_movie_page import MovieTimeMoviePage
+from page_objects.web.movie_time_navigation_manu_page import MovieTimeNavigationMenu
 from utils.common_ops import extract_digits_from_text
+from google import genai
+from google.genai import types
 
 
 class MovieFlows:
@@ -19,6 +22,7 @@ class MovieFlows:
         self.home = MovieTimeHomePage(page)
         self.all_movies = MovieTimeAllMoviesPage(page)
         self.movie_page = MovieTimeMoviePage(page)
+        self.navigation_manu = MovieTimeNavigationMenu(page)
 
     @allure.step("Sign in:")
     def get_actual_now_showing_icons_count(self)->int:
@@ -61,5 +65,30 @@ class MovieFlows:
             WebVerify.contain_text(self.login.error_message,LOGIN_ERROR_MESSAGE)
 
     
-    def click_on_Theme_Toggle(self):
-        pass
+    @allure.step("Click on Theme Toggle Button")
+    def click_on_Theme_Toggle(self) -> None:
+        UIActions.click(self.navigation_manu.switch_mode_button)
+
+
+    @allure.step("Verify theme mode with vision")
+    def verify_theme_with_vision(self, expected_mode: str) -> bool:
+        self.page.wait_for_timeout(1000)
+        client = genai.Client(api_key=GEMENI_API_KEY)
+        screenshot_bytes = self.page.screenshot(type="png")
+        prompt = (
+            "Examine the screenshot. Is the main background color of the website white or very light? "
+            "Respond with 'Yes' or 'No' only."
+        )
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                prompt,
+                types.Part.from_bytes(
+                    data=screenshot_bytes,
+                    mime_type="image/png"
+                )
+            ]
+        )
+        result = response.text.strip().lower()
+        print(f"\nThe result from AI: {result}")
+        return "yes" in result

@@ -31,7 +31,7 @@ class TestChuckAPI:
 
 
     #@allure.title("Verify Data Integrity: API Categories vs Database Records")
-    #@allure.description("Validates that the joke categories retrieved from the API endpoint exactly match the records stored in the system database.")
+    #@allure.description("Validates that the joke categories retrieved from the API match the records stored in the system database.")
     def test_04_verify_api_categories_against_db(self, chuck_flows, db_connection):
         api_list = chuck_flows.get_categories().json()
         db_list = get_db_categories(db_connection)

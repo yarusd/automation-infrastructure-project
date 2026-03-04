@@ -104,5 +104,9 @@ class WebVerify:
         verify_expectations()
 
 
+    @staticmethod
+    @allure.step("Verify Condition is True")
+    def is_true(condition: bool, message: str = None):
+        assert condition, message or "ERROR - Condition is not True"
 
         

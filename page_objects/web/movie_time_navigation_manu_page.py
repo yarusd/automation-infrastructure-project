@@ -7,4 +7,6 @@ class MovieTimeNavigationMenu:
         self.theme_switch_button = page.locator("[data-testid='theme-toggle']")
         self.login_button = page.locator("[data-testid='theme-toggle']")
         self.register_button = page.locator("[data-testid='theme-toggle']")
-        self.expected_toggle_icon = page.locator("//*[text()='🌙']")
+        self.switch_mode_button = page.locator("[data-testid='theme-toggle']")
+        self.expected_result = page.locator("[class='app light']")
+        # self.expected_toggle_icon = page.locator("//*[text()='🌙']")
