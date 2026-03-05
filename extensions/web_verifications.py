@@ -1,4 +1,7 @@
+import re
+
 from playwright.sync_api import Locator, expect
+import pytest
 from smart_assertions import soft_assert, verify_expectations
 import allure
 
@@ -60,13 +63,51 @@ class WebVerify:
         """
         expect(element).to_have_count(count)
 
+
+    @staticmethod
+    @allure.step("Verifies that the number of elements matching the locator is equal to the expected count")
+    def count(element: Locator, count: str):
+        """
+        Verifies that the number of elements matching the locator is equal to the expected count.
+        """
+        expect(element).to_have_count(int(count))
+
+
+    @staticmethod
+    @allure.step("Verify element is in list and count is correct")
+    def verify_in_list(keyword: str, elements: Locator, expected_count: str):
+        elements_list = elements.all_inner_texts()
+
+        assert len(elements_list) == int(expected_count), \
+            f"List - {len(elements_list)} count does not match expected count {int(expected_count)}"
+
+        #Perform this test as well, only if the len of the list is as expected
+        result = all(keyword.lower() in item.lower() for item in elements_list)
+        assert result ,f"{keyword} was not found in all list items - {elements_list}"
+        
+
+
     @staticmethod
     @allure.step("Verify that the element contains the expected text")
     def contain_text(element: Locator, expected_text: str):
+         """
+        Verifies that the text of the element contains the expected text,
+        ignoring differences in uppercase/lowercase.
         """
-        Verifies that the text of the element contains the expected text.
+        # regex case-insensitive
+         expect(element).to_contain_text(re.compile(expected_text, re.IGNORECASE))
+
+    @staticmethod
+    @allure.step("Verify that a list of strings contains the expected text")
+    def contain_text_list(elements: list[str], expected_text: str):
         """
-        expect(element).to_contain_text(expected_text)
+        Verifies that at least one string in the list contains the expected text,
+        ignoring differences in uppercase/lowercase.
+        If the list is empty, the assertion fails.
+        """
+        combined_text = " ".join(elements)  # מחברים את כל התוצאות למחרוזת אחת
+        if not re.search(expected_text, combined_text, re.IGNORECASE):
+            raise AssertionError(f"Expected '{expected_text}' to be in '{combined_text}'")
     
     @staticmethod
     @allure.step("Verify that the element has the expected value")
@@ -75,6 +116,16 @@ class WebVerify:
         Verifies that the value of the element matches the expected value.
         """
         expect(element).to_have_value(expected_value)
+    
+    
+    @staticmethod
+    @allure.step("Verify that list is sorted by first word (A-Z)")
+    def list_is_sorted_by_first_word(values: list[str]):
+        """
+        בודק שהרשימה ממוינת לפי המילה הראשונה בלבד (A-Z), התעלמות מה-Case
+        """
+        first_words = [v.split()[0].lower() for v in values]
+        assert first_words == sorted(first_words), f"Titles are not sorted by first word. {first_words}"
 
 
     # Soft Assertions    
@@ -87,6 +138,15 @@ class WebVerify:
         """
         actual_text = element.inner_text()
         soft_assert(actual_text == expected_text, message)
+
+    @staticmethod
+    @allure.step("Soft assertion to check if two integers are equal")
+    def soft_int(actual: int, expected: int, message:str= None):
+        """
+        Soft assertion to compare two integers.
+        Test execution will continue even if this assertion fails.
+        """
+        soft_assert(actual == expected, message)
 
     @staticmethod
     @allure.step("Soft assertion to check if the element is visible")
@@ -102,6 +162,17 @@ class WebVerify:
     def soft_all():
         """Raises all collected assertion errors at once."""
         verify_expectations()
+
+    @staticmethod
+    @allure.step("Verify all elements contain: {expected_text}")
+    def all_elements_contain_text(locator: Locator, expected_text: str):
+        # המתן שהאלמנטים יהיו גלויים
+        locator.first.wait_for(state="visible")
+        
+        titles = locator.all_text_contents()
+        for title in titles:
+            assert expected_text.lower() in title.lower(), \
+                f"Expected '{expected_text}' to be in '{title}'"
 
 
     @staticmethod

@@ -1,0 +1,11 @@
+{
+    "categories": [
+        "dev"
+    ],
+    "created_at": "2020-01-05 13:42:19.104863",
+    "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+    "id": "medf6licr1kzvma_mo_r4a",
+    "updated_at": "2020-01-05 13:42:19.104863",
+    "url": "https://api.chucknorris.io/jokes/medf6licr1kzvma_mo_r4a",
+    "value": "Chuck Norris doesn't need an OS."
+}

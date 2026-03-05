@@ -1,17 +1,19 @@
 import pytest
 from pytest import FixtureRequest
-from playwright.sync_api import Playwright
+from playwright.sync_api import Page, Playwright
 
 from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from utils.common_ops import load_config
 from utils.fixture_helpers import get_browser, attach_screenshot, attach_trace
 from workflows.api.chuck_api_flows import ChuckApiFlows
+from workflows.web.chuck_web_flows import ChuckWebFlows
 from workflows.web.movie_time_flows import MovieFlows
 import os
 import time
 import uuid
-
+import pytest
+import sqlite3
 # Load the configuration
 CONFIG = load_config()     
 
@@ -39,14 +41,18 @@ def request_context(playwright: Playwright, request:FixtureRequest):
 def movie_time_flows(page):
     return MovieFlows(page)
 
+@pytest.fixture
+def navigate_to_all_movies_page(movie_time_flows:MovieFlows):
+    movie_time_flows.navigate_to_all_movies()
+    movie_time_flows.navigate_to_all_category()
+
 
 @pytest.fixture
 def chuck_flows(request_context):
     return ChuckApiFlows(request_context)
 
 
-import pytest
-import sqlite3
+
 
 @pytest.fixture(scope="class")
 def db_connection():

@@ -10,6 +10,27 @@ class APIVerify:
         assert response.status == expected_status_code, \
             f"Expected status code {expected_status_code}, but got {response.status}"
         
+    @staticmethod
+    def verify_not_equals(actual, unexpected, message="Values are unexpectedly equal"):
+        """
+        Verifies that two values are NOT equal.
+        """
+        assert actual != unexpected, f"{message}: {actual} == {unexpected}"
+
+
+    @staticmethod
+    def compare_values(value1: int, value2: int):
+        """
+        Compares two integer values and asserts that the first value is greater than the second.
+        Provides a clear assertion message indicating the relationship.
+        """
+        if value1 > value2:
+            assert value1 > value2
+        elif value1 < value2:
+            raise AssertionError(f"{value2} is greater than {value1}")
+        else:
+            raise AssertionError(f"Both values are equal: {value1}")
+
 
     @staticmethod
     def json_key_exists(response_data, key: str):
@@ -28,6 +49,18 @@ class APIVerify:
             f"Expected value for key '{key}' is '{expected_value}', but got '{response_data[key]}'"
         )
 
+    @staticmethod
+    def verify_required_fields_not_null(response_data: dict, required_fields: list):
+        """
+        Verifies that required fields exist and are not null/empty.
+        """
+        for field in required_fields:
+            assert field in response_data, f"Field '{field}' is missing in response"
+
+            value = response_data[field]
+            assert value is not None, f"Field '{field}' is None"
+            assert value != "", f"Field '{field}' is empty"
+    
     
     @staticmethod
     def json_contains(response_data, expected_data: dict):
@@ -47,18 +80,46 @@ class APIVerify:
         Soft asserts that the API response status code matches the expected status code.
         """
         if isinstance(response, dict):  
-            VerifyAPI.errors.append("Expected a Playwright response object, got a dictionary.")
+            APIVerify.errors.append("Expected a Playwright response object, got a dictionary.")
 
         elif response.status != expected_status_code:
-            VerifyAPI.errors.append(
+            APIVerify.errors.append(
                 f"Expected status code {expected_status_code}, but got {response.status}."
             )
+
+
+
+    errors = []
+
+    @staticmethod
+    def verify_responses_status_ok(responses: list, expected_status_code: int = 200):
+        """
+        Iterates over all APIResponse objects and soft asserts that each has status 200.
+        """
+        for i, response in enumerate(responses, start=1):
+            if isinstance(response, dict):
+                APIVerify.errors.append(f"Expected APIResponse, got dict at request #{i}")
+            elif response.status != expected_status_code:
+                APIVerify.errors.append(
+                    f"Request #{i}: Expected status {expected_status_code}, got {response.status}"
+                )
+
+
+
+    errors = []
+
+    @staticmethod
+    def soft_assert(condition: bool, message: str):
+        if not condition:
+            # לא עוצר – רק אוסף את ההודעה
+            APIVerify.errors.append(message)
 
     @staticmethod
     def assert_all():
         """
         Raises all collected assertion errors at once.
         """
+<<<<<<< HEAD
         if VerifyAPI.errors:
             error_message = "\n".join(VerifyAPI.errors)
             VerifyAPI.errors.clear()  # Clear errors after raising
@@ -67,3 +128,9 @@ class APIVerify:
     @staticmethod
     def list_equals(actual_list, expected_list, message):
         assert sorted(actual_list) == sorted(expected_list), f"{message} \nActual: {actual_list} \nExpected: {expected_list}"
+=======
+        if APIVerify.errors:
+            error_message = "\n".join(APIVerify.errors)
+            APIVerify.errors.clear()  # Clear errors after raising
+            raise AssertionError(f"Soft assertion failures:\n{error_message}")
+>>>>>>> yarus

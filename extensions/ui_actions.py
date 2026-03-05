@@ -14,6 +14,11 @@ class UIActions:
         page.goto(url)
 
     
+    # @staticmethod
+    # @allure.step("Click on element")
+    # def click_on_list(element: List[Locator], timeout: int = DEFAULT_TIMEOUT) -> None:
+    #     element.wait_for(state="visible", timeout=timeout)
+    #     element.click(timeout=timeout)
 
     @staticmethod
     @allure.step("Click on element")
@@ -26,6 +31,7 @@ class UIActions:
     def force_click(element: Locator, timeout: int = DEFAULT_TIMEOUT) -> None:
         element.wait_for(state="attached", timeout=timeout)
         element.evaluate("el => el.click()")
+
 
     @staticmethod
     @allure.step("Get text from element")
@@ -47,6 +53,24 @@ class UIActions:
         element.wait_for(state="visible", timeout=timeout)
         element.fill("")  # clear first (more stable)
         element.fill(text, timeout=timeout)
+        
+    @staticmethod
+    @allure.step("Count elements")
+    def count(element: Locator, timeout: int = DEFAULT_TIMEOUT) -> int:
+        element.first.wait_for(state="visible", timeout=timeout)
+        return element.count()
+    
+    @staticmethod
+    @allure.step("Get all texts from elements list")
+    def get_text_list(element: Locator, timeout: int = DEFAULT_TIMEOUT) -> list[str]:
+        element.first.wait_for(state="visible", timeout=timeout)
+
+        texts = element.all_inner_texts()
+
+        return texts
+    
+
+    
 
 
       
