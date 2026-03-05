@@ -8,4 +8,4 @@ expected_movie_description = "A ragtag group of antiheroes and reformed villains
 user_name = "user1@test.com"
 password = "123456"
 expected_log_in_header = "MOVIETIME"
-GEMENI_API_KEY = "AIzaSyBtx1PpoqoTSretWtqIiJEypgh_03RkDv8"
+GEMENI_API_KEY = "AIzaSyB4auKqE4A3ImM6c-eanH31_BIwyQX0Ei4"

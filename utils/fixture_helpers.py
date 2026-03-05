@@ -14,3 +14,26 @@ def get_browser(playwright: Playwright,browser_type)->Browser:
         return playwright.firefox.launch(headless=CONFIG["HEADLESS"], slow_mo=CONFIG["SLOW_MO"], args=launch_args)
     else:
         raise Exception("Unsupported Browser was provided!")
+import os
+import allure
+
+def attach_trace(page, item_name, trace_path):
+    """Attaches a Playwright trace to the Allure report."""
+    page.context.tracing.stop(path=trace_path)
+    trace_location = os.path.join(os.getcwd(), CONFIG.get("ALLURE_RESULTS_DIR", "allure-results"))
+    
+    # Message for Allure report
+    message = f"To view Trace file, please open 'Trace Manager', go to: {trace_location} , and select file: {os.path.basename(trace_path)}"
+    
+    if os.path.exists(trace_path):
+        allure.attach(message, name="Trace Message", attachment_type=allure.attachment_type.HTML)
+
+def attach_screenshot(page, item_name, screenshot_path):
+    """Captures and attaches a screenshot to the Allure report."""
+    page.screenshot(path=screenshot_path)
+    with open(screenshot_path, "rb") as screenshot_file:
+        allure.attach(
+            screenshot_file.read(),
+            name=f"Failure Screenshot: {item_name}",
+            attachment_type=allure.attachment_type.PNG,
+        )
