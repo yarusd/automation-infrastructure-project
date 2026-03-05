@@ -14,6 +14,8 @@ class ChuckApiFlows:
         params = {"query":query}
         return self.api.get(FREE_SEARCH_RESOURCE,params)
     
+    def get_categories(self) -> APIResponse:
+        return self.api.get("categories")
     @allure.step("Get a random joke")
     def get_a_joke(self)->APIResponse:
         return self.api.get(RANDOM_RESOURCE)

@@ -5,6 +5,9 @@ import pytest
 from smart_assertions import soft_assert, verify_expectations
 import allure
 
+from extensions.ui_actions import UIActions
+from page_objects.web.movie_time_login_page import MovieTimeLoginPage
+
 class WebVerify:
   
     @staticmethod    
@@ -16,14 +19,25 @@ class WebVerify:
         expect(element).to_have_text(expected_text)
 
     @staticmethod
+    @allure.step("Verify login flow:")
+    def verify_log_in(page,login:MovieTimeLoginPage,expected_status:str)->str:
+       if expected_status == "True":
+            WebVerify.visible(login.actual_log_in_header)
+            UIActions.click(login.log_out_button)
+       else:
+            WebVerify.visible(login.error_message)
+            page.reload()
+
+
     @allure.step("Verify String")
-    def strings_are_equal(actual:str,expected:str,message:str =None):
+    def strings_are_equal(actual:str,expected:str,message:str=None):
+        assert actual == expected,message or "EROOR - not matched"
+
+
+    
+    @allure.step("Verify Values")
+    def values_are_equal(actual:float,expected:float,message=None):
         assert actual == expected,message
-
-
-    def numbers_are_equal(actual: int, expected: int, message: str = None):
-        assert actual == expected, "No results"
-
 
     @staticmethod
     @allure.step("Verify that the element is visible")
@@ -161,5 +175,9 @@ class WebVerify:
                 f"Expected '{expected_text}' to be in '{title}'"
 
 
+    @staticmethod
+    @allure.step("Verify Condition is True")
+    def is_true(condition: bool, message: str = None):
+        assert condition, message or "ERROR - Condition is not True"
 
         

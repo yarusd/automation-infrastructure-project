@@ -1,0 +1,63 @@
+{
+    "total": 6,
+    "result": [
+        {
+            "categories": [
+                "sport"
+            ],
+            "created_at": "2020-01-05 13:42:19.576875",
+            "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+            "id": "2o6183z1rmkus1imghxsug",
+            "updated_at": "2020-01-05 13:42:19.576875",
+            "url": "https://api.chucknorris.io/jokes/2o6183z1rmkus1imghxsug",
+            "value": "Chuck Norris won super bowls VII and VIII singlehandedly before unexpectedly retiring to pursue a career in ass-kicking."
+        },
+        {
+            "categories": [],
+            "created_at": "2020-01-05 13:42:19.897976",
+            "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+            "id": "YAbKNHnaQXygfWwVbCPNqw",
+            "updated_at": "2020-01-05 13:42:19.897976",
+            "url": "https://api.chucknorris.io/jokes/YAbKNHnaQXygfWwVbCPNqw",
+            "value": "Why did Colonel Sanders throw away his military career to fry chicken? Chuck Norris."
+        },
+        {
+            "categories": [],
+            "created_at": "2020-01-05 13:42:20.262289",
+            "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+            "id": "23UK5d5hSMetS2iAGbV_gQ",
+            "updated_at": "2020-01-05 13:42:20.262289",
+            "url": "https://api.chucknorris.io/jokes/23UK5d5hSMetS2iAGbV_gQ",
+            "value": "Lindsay Lohan was actually on her way to having a great acting career before Chuck Norris sodomized her."
+        },
+        {
+            "categories": [],
+            "created_at": "2020-01-05 13:42:23.240175",
+            "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+            "id": "5tsjlaIORqORRLO9yLAyzg",
+            "updated_at": "2020-01-05 13:42:23.240175",
+            "url": "https://api.chucknorris.io/jokes/5tsjlaIORqORRLO9yLAyzg",
+            "value": "Sadaharu Oh holds the world record with 868 home runs in his career. Chuck Norris could break that record in a single season."
+        },
+        {
+            "categories": [
+                "explicit"
+            ],
+            "created_at": "2020-01-05 13:42:23.880601",
+            "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+            "id": "LDlO5x0-Rbq28xj9KfMuLQ",
+            "updated_at": "2020-01-05 13:42:23.880601",
+            "url": "https://api.chucknorris.io/jokes/LDlO5x0-Rbq28xj9KfMuLQ",
+            "value": "Chuck Norris recently appeared in a special episode of \"Behind The Beard\" to talk about his life, acting career, his epic sexual virility, his boots, beer, his current kill count (rounded down to the nearest thousand), martial arts, death, whiskey and his penis."
+        },
+        {
+            "categories": [],
+            "created_at": "2020-01-05 13:42:26.991637",
+            "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+            "id": "7n-CqLwZTvK3Vs8J7Sg94A",
+            "updated_at": "2020-01-05 13:42:26.991637",
+            "url": "https://api.chucknorris.io/jokes/7n-CqLwZTvK3Vs8J7Sg94A",
+            "value": "Chuck Norris once punched Jean-Claude Van Damme in his career."
+        }
+    ]
+}

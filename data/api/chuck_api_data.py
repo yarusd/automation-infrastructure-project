@@ -1,8 +1,11 @@
 CHUCK_BASE_URL = "https://api.chucknorris.io/jokes/"
+CATEGORIES = "https://api.chucknorris.io/jokes/categories"
 FREE_SEARCH_RESOURCE = "search"
 CATEGORIES_RESOURCE = "category"
 RANDOM_RESOURCE = "random"
 SEARCH_VALUE = "Barack Obama"
+JOKE = "jokes"
+CAREER = "career"
 EXPECTED_STATUS_SUCCESS_CODE = 200
 ID = "id"
 VALUE = "value"

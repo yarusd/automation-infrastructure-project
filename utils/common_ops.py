@@ -1,6 +1,7 @@
 import csv
 import os
 import json
+import re
 
 def load_config():
     """Loads the configuration from config.json and returns it as a dictionary."""
@@ -27,3 +28,21 @@ def read_data_from_csv(file_path):
         for row in reader:
             data.append(row)
      return data
+
+
+def extract_digits_from_text(text: str) -> float:
+    """
+    Extracts the first numeric value from a string and returns it as float.
+    """
+    match = re.search(r"\d+(\.\d+)?", text)
+    if not match:
+        raise ValueError(f"No numeric value found in: {text}")
+    return float(match.group())
+
+def get_db_categories(conn):
+    """
+    Retrieves the complete list of joke categories from the system database.
+    """
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM categories")
+    return [row[1] for row in cursor.fetchall()]

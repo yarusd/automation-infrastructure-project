@@ -1,7 +1,11 @@
 {
     "BROWSER_TYPE":"CHROME",
     "HEADLESS":false,
-    "SLOW_MO":1200,
-    "DEFAULT_COMMAND_TIMEOUT" : 10000  
+   "SLOW_MO":1200,
+    "DEFAULT_COMMAND_TIMEOUT" : 10000 ,
+    "TRACES_DIR": "traces/",
+    "ALLURE_RESULTS_DIR": "allure-results",
+    "SCREENSHOT_PREFIX": "screenshot",
+    "TRACE_PREFIX": "trace"
 
 }
