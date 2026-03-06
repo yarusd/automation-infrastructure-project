@@ -44,16 +44,3 @@ class ChuckApiFlows:
             response = self.get_a_joke()
             responses.append(response)
         return responses
-                
-   
-    
- 
-
-
-
-
-  
-       
-
-    
-
