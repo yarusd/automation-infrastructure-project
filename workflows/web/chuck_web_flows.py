@@ -2,7 +2,7 @@
 import allure
 from playwright.sync_api import Page
 from extensions.ui_actions import UIActions
-from page_objects.web.api_chuck.chuck_web_page import ChuckWebPage
+from page_objects.api_web.chuck_web_page import ChuckWebPage
 
 
 class ChuckWebFlows:

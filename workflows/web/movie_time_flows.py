@@ -157,6 +157,9 @@ class MovieFlows:
         result = response.text.strip().lower()
         print(f"\nThe result from AI: {result}")
         return "yes" in result
+    @allure.step("Navigate to homepage")
+    def navigate_to_homepage(self):
+        UIActions.click(self.navigation_manu.home_button)
   
 
     

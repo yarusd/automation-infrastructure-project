@@ -7,7 +7,7 @@ from utils.common_ops import read_data_from_csv
 from workflows.web.movie_time_flows import MovieFlows
 
 
-ALL_MOVIES_DATA_PATH = r"data\ddt\all_movie_ddt_data.csv"
+ALL_MOVIES_DATA_PATH = r"data\ddt\search_data.csv"
 
 class TestAllMoviesSearchDDT:
 

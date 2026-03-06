@@ -88,3 +88,13 @@ def pytest_runtest_makereport(item, call):
                 trace_name = f"{CONFIG['TRACE_PREFIX']}_{item.name}_{timestamp}.zip"
                 trace_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], trace_name)
                 attach_trace(page, item.name, trace_path)
+
+
+@pytest.fixture
+def chuck_web_flows(page):
+    return ChuckWebFlows(page)
+
+
+@pytest.fixture
+def navigate_to_homepage(movie_time_flows:MovieFlows):
+    movie_time_flows.navigate_to_homepage()
