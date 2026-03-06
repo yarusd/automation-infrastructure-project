@@ -1,0 +1,11 @@
+{
+    "categories": [
+        "explicit"
+    ],
+    "created_at": "2020-01-05 13:42:29.855523",
+    "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+    "id": "WeZFqcg_T92j4SLGSKSquA",
+    "updated_at": "2020-01-05 13:42:29.855523",
+    "url": "https://api.chucknorris.io/jokes/WeZFqcg_T92j4SLGSKSquA",
+    "value": "Chuck Norris' penis is even bigger than that."
+}

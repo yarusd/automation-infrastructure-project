@@ -1,10 +1,8 @@
-import re
-
+import os
 import allure
-from playwright.sync_api import Locator, Page
+from playwright.sync_api import Page
 from data.web.movie_time_data import *
 from extensions.ui_actions import UIActions
-from extensions.web_verifications import WebVerify
 from page_objects.web.movie_time_register_page import MovieTimeRegisterPage
 from page_objects.web.movie_time_all_movie_page import MovieTimeAllMoviesPage
 from page_objects.web.movie_time_home_page import MovieTimeHomePage
@@ -138,7 +136,7 @@ class MovieFlows:
     @allure.step("Verify theme mode with vision")
     def verify_theme_with_vision(self, expected_mode: str) -> bool:
         self.page.wait_for_timeout(1000)
-        client = genai.Client(api_key=GEMENI_API_KEY)
+        client = genai.Client(api_key=os.getenv("MY_API_KEY"))
         screenshot_bytes = self.page.screenshot(type="png")
         prompt = (
             "Examine the screenshot. Is the main background color of the website white or very light? "
@@ -157,6 +155,7 @@ class MovieFlows:
         result = response.text.strip().lower()
         print(f"\nThe result from AI: {result}")
         return "yes" in result
+    
     @allure.step("Navigate to homepage")
     def navigate_to_homepage(self):
         UIActions.click(self.navigation_manu.home_button)

@@ -1,7 +1,10 @@
 import pytest
 from pytest import FixtureRequest
 from playwright.sync_api import Page, Playwright
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from utils.common_ops import load_config
@@ -23,7 +26,7 @@ def page(playwright: Playwright, request:FixtureRequest):
     context = browser.new_context(no_viewport=True)    
     context.tracing.start(screenshots=True, snapshots=True, sources=True)    
     page = context.new_page()
-    page.goto(movie_time_URL)
+    page.goto(MOVIE_TIME_URL)
     yield page    
     # Best practice: Close page before context
     page.close()

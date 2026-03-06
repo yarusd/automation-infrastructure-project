@@ -1,0 +1,11 @@
+{
+    "categories": [
+        "explicit"
+    ],
+    "created_at": "2020-01-05 13:42:29.855523",
+    "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+    "id": "i3ceuZDPTbyxMvYAcWfxDA",
+    "updated_at": "2020-01-05 13:42:29.855523",
+    "url": "https://api.chucknorris.io/jokes/i3ceuZDPTbyxMvYAcWfxDA",
+    "value": "Chuck Norris had sex with Hannah Montana AND Miley Cyrus at the same time."
+}

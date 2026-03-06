@@ -1,0 +1,11 @@
+{
+    "categories": [
+        "travel"
+    ],
+    "created_at": "2020-01-05 13:42:19.576875",
+    "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+    "id": "9rqqcar_s5mqpujm0yu5za",
+    "updated_at": "2020-01-05 13:42:19.576875",
+    "url": "https://api.chucknorris.io/jokes/9rqqcar_s5mqpujm0yu5za",
+    "value": "For Spring Break '05, Chuck Norris drove to Madagascar, riding a chariot pulled by two electric eels."
+}

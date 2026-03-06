@@ -1,0 +1,11 @@
+{
+    "categories": [
+        "explicit"
+    ],
+    "created_at": "2020-01-05 13:42:29.855523",
+    "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+    "id": "IQAFTYl7RLGc3xCB5QM2IA",
+    "updated_at": "2020-01-05 13:42:29.855523",
+    "url": "https://api.chucknorris.io/jokes/IQAFTYl7RLGc3xCB5QM2IA",
+    "value": "On a recent survey form, Chuck Norris wrote his occupation as 'Chuck Norris', sex 'constantly' and pastimes 'Godliness, vigilance, and pimping'."
+}
