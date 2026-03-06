@@ -15,6 +15,9 @@ class TestAllMoviesNavigationDDT:
     @allure.description("This test verify navigation menu links")
     @pytest.mark.parametrize("nav_data", read_data_from_csv(NAVIGATION_DATA_PATH))
     def test_verify_navigation_menu_headers(self, movie_time_flows: MovieFlows, nav_data):
-        actual = movie_time_flows.get_page_header(nav_data["button_name"])
+        actual = movie_time_flows.click_and_get_page_header(nav_data["header_name"])
         expected = nav_data["expected_header"]
+
         WebVerify.strings_are_equal(actual.upper(), expected.upper())
+
+

@@ -1,13 +1,5 @@
 import allure
 import pytest
-
-from data.web.movie_time_data import *
-from extensions.web_verifications import WebVerify
-from utils.common_ops import read_data_from_csv
-from workflows.web.movie_time_flows import MovieFlows
-
-import allure
-import pytest
 from data.web.movie_time_data import *
 from extensions.web_verifications import WebVerify
 from utils.common_ops import read_data_from_csv
@@ -24,7 +16,7 @@ class TestMovieCategoryDDT:
         movie_time_flows.navigate_to_all_movies()
         actual_count = movie_time_flows.get_movie_count_by_genre_name(category_data["genre_name"])
         expected_count = int(category_data["expected_count"])
-        WebVerify.numbers_are_equal(actual_count,expected_count,message=f"Count mismatch for genre: {category_data['genre_name']}")
+        WebVerify.values_are_equal(actual_count,expected_count,message=f"Count mismatch for genre: {category_data['genre_name']}")
 
 
 

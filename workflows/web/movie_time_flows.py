@@ -5,12 +5,11 @@ from playwright.sync_api import Locator, Page
 from data.web.movie_time_data import *
 from extensions.ui_actions import UIActions
 from extensions.web_verifications import WebVerify
-from page_objects.web.movie_time_Register_page import MovieTimeRegisterPage
+from page_objects.web.movie_time_register_page import MovieTimeRegisterPage
 from page_objects.web.movie_time_all_movie_page import MovieTimeAllMoviesPage
 from page_objects.web.movie_time_home_page import MovieTimeHomePage
 from page_objects.web.movie_time_login_page import MovieTimeLoginPage
 from page_objects.web.movie_time_movie_page import MovieTimeMoviePage
-from page_objects.web.movie_time_navigation_manu_page import MovieTimeNavigationMenu
 from utils.common_ops import extract_digits_from_text
 from google import genai
 from google.genai import types
@@ -25,6 +24,7 @@ class MovieFlows:
         self.all_movies = MovieTimeAllMoviesPage(page)
         self.movie_page = MovieTimeMoviePage(page)
         self.navigation_manu = MovieTimeNavigationMenu(page)
+        self.register = MovieTimeRegisterPage(page)
 
     @allure.step("Sign in:")
     def get_actual_now_showing_icons_count(self)->int:
@@ -112,14 +112,24 @@ class MovieFlows:
         UIActions.force_click(target_genre)
         return UIActions.count(self.all_movies.movie_title)
     
-    @allure.step("Get Navigation header text")
-    def get_page_header(self, button_name: str) -> str:
-        if button_name.lower() == 'theme':
-            target = self.navigation.theme_switch_button
-        else:
-            WebVerify.contain_text(self.login.error_message,LOGIN_ERROR_MESSAGE)
 
-    
+
+    @allure.step("Get Navigation header text")
+    def click_and_get_page_header(self, button_name: str) -> str:
+
+        buttons = {
+            "home": self.navigation_manu.home_button,
+            "all movies": self.navigation_manu.all_movies_button,
+            "theme": self.navigation_manu.switch_mode_button,
+            "login": self.navigation_manu.login_button,
+            "register": self.navigation_manu.register_button
+        }
+
+        target = buttons[button_name.lower()]
+        target.click()
+
+        return self.navigation_manu.page_header.inner_text()
+
     @allure.step("Click on Theme Toggle Button")
     def click_on_Theme_Toggle(self) -> None:
         UIActions.click(self.navigation_manu.switch_mode_button)

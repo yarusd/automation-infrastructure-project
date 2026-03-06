@@ -33,7 +33,7 @@ class WebVerify:
     def strings_are_equal(actual:str,expected:str,message:str=None):
         assert actual == expected,message or "EROOR - not matched"
 
-
+  
     
     @allure.step("Verify Values")
     def values_are_equal(actual:float,expected:float,message=None):

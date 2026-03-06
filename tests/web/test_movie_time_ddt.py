@@ -13,7 +13,7 @@ from workflows.web.movie_time_flows import MovieFlows
 
 LOGIN_DATA_PATH = r"data\ddt\login_data.csv"
 
-class TestSauceDDT:
+class TestLogineDDT:
 
     
     @allure.title("User Authentication DDT")

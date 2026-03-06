@@ -1,0 +1,11 @@
+{
+    "categories": [
+        "explicit"
+    ],
+    "created_at": "2020-01-05 13:42:29.855523",
+    "icon_url": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+    "id": "xuGUnMJuT06ttC4nrP8QqA",
+    "updated_at": "2020-01-05 13:42:29.855523",
+    "url": "https://api.chucknorris.io/jokes/xuGUnMJuT06ttC4nrP8QqA",
+    "value": "Little known fact: the greatest taste sensation in the world is Chuck Norris' penis."
+}
