@@ -29,12 +29,6 @@ class TestMovieTimeHomepageWeb:
         WebVerify.strings_are_equal(actual_movie_description,EXPECTED_MOVIE_DESCRIPTION,"Error - Movie description mismatch")
 
 
-    allure.title("Verify Theme Toggle Switches to Light Mode")
-    allure.description("Verifies that clicking the 'Theme Toggle' button displays the light mode view.")
-    def test00_verify_theme_toggle_leads_to_light_mode(self, movie_time_flows: MovieFlows,navigate_to_homepage):
-        movie_time_flows.click_on_Theme_Toggle()
-        WebVerify.visible(movie_time_flows.navigation_manu.expected_result)
-
     @allure.title("Verify Theme Toggle Switches to Light Mode (AI Vision)")
     @allure.description("Verifies that clicking the 'Theme Toggle' button displays the light mode view.(with AI)")
     def test04_verify_theme_toggle_leads_to_light_mode_with_vision(self, movie_time_flows: MovieFlows,navigate_to_homepage):
