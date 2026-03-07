@@ -1,9 +1,7 @@
-MOVIE_TIME_URL = "https://yarusd.github.io/movie-theater/"
-expected_booking_error_message = "Please login and select a movie first."
-expected_movie_description = "A ragtag group of antiheroes and reformed villains are reluctantly assembled by a shadowy government agency for a suicide mission — only to discover they're being set up as scapegoats."
-expected_log_in_header = "MOVIETIME"
+EXPECTED_BOOKING_ERROR_MESSAGE = "Please login and select a movie first."
+EXPECTED_MOVIE_DESCRIPTION = "A ragtag group of antiheroes and reformed villains are reluctantly assembled by a shadowy government agency for a suicide mission — only to discover they're being set up as scapegoats."
 GEMENI_API_KEY = "AIzaSyB4auKqE4A3ImM6c-eanH31_BIwyQX0Ei4"
-EXPECTED_GENRE_MOVIE_COUNT = [60,9,6,12,10,7,6,5,3,2]
+MOVIE_TIME_URL = "https://yarusd.github.io/movie-theater/"
 SORT_BY_RATING = "rating"
 SORT_BY_TITLE = "title"
 SORT_BY_YEAR ="year"

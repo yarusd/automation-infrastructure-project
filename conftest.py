@@ -24,7 +24,7 @@ CONFIG = load_config()
 def page(playwright: Playwright, request:FixtureRequest):
     browser = get_browser(playwright,CONFIG["BROWSER_TYPE"].lower())
     context = browser.new_context(no_viewport=True)    
-    context.tracing.start(screenshots=True, snapshots=True, sources=True)    
+    # context.tracing.start(screenshots=True, snapshots=True, sources=True)    
     page = context.new_page()
     page.goto(MOVIE_TIME_URL)
     yield page    
@@ -54,6 +54,14 @@ def navigate_to_all_movies_page(movie_time_flows:MovieFlows):
 def chuck_flows(request_context):
     return ChuckApiFlows(request_context)
 
+@pytest.fixture
+def chuck_web_flows(page):
+    return ChuckWebFlows(page)
+
+
+@pytest.fixture
+def navigate_to_homepage(movie_time_flows:MovieFlows):
+    movie_time_flows.navigate_to_homepage()
 
 
 
@@ -69,6 +77,7 @@ def pytest_runtest_makereport(item, call):
     """
     Hook to attach screenshots, videos, and traces to Allure reports on test failure.
     """
+
     outcome = yield
     report = outcome.get_result()
 
@@ -93,11 +102,3 @@ def pytest_runtest_makereport(item, call):
                 attach_trace(page, item.name, trace_path)
 
 
-@pytest.fixture
-def chuck_web_flows(page):
-    return ChuckWebFlows(page)
-
-
-@pytest.fixture
-def navigate_to_homepage(movie_time_flows:MovieFlows):
-    movie_time_flows.navigate_to_homepage()
