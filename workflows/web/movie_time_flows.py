@@ -3,14 +3,15 @@ import allure
 from playwright.sync_api import Page
 from data.web.movie_time_data import *
 from extensions.ui_actions import UIActions
+from utils.common_ops import extract_digits_from_text
+from google import genai
+from google.genai import types
+
 from page_objects.web.movie_time_register_page import MovieTimeRegisterPage
 from page_objects.web.movie_time_all_movie_page import MovieTimeAllMoviesPage
 from page_objects.web.movie_time_home_page import MovieTimeHomePage
 from page_objects.web.movie_time_login_page import MovieTimeLoginPage
 from page_objects.web.movie_time_movie_page import MovieTimeMoviePage
-from utils.common_ops import extract_digits_from_text
-from google import genai
-from google.genai import types
 from page_objects.web.movie_time_navigation_menu_page import MovieTimeNavigationMenu
 
 
@@ -24,24 +25,28 @@ class MovieFlows:
         self.navigation_manu = MovieTimeNavigationMenu(page)
         self.register = MovieTimeRegisterPage(page)
 
-    @allure.step("Sign in:")
+    @allure.step("Get actual now showing movies count")
     def get_actual_now_showing_icons_count(self)->int:
         return  self.home.actual_now_showing_icon.count()
-    
+
+    @allure.step("Get expected now showing movies count")   
     def get_expected_now_showing_icons__count(self)->int:
         return extract_digits_from_text(UIActions.get_text(self.home.expected_now_showing_icon))
-    
+
+    @allure.step("Get error message")   
     def get_error_booking_process_message(self)->str:
         UIActions.click(self.home.book_now_button)
         return self.home.actual_booking_movie_error_message
 
+    @allure.step("Click on details button")
     def click_on_details_button(self) -> None:
         UIActions.click(self.home.details_button)
 
+    @allure.step("Get movie description")
     def get_movie_description(self) -> str:
         return UIActions.get_text(self.movie_page.movie_description)
 
-
+    @allure.step("Sign in")
     def sign_in(self,user_name:str,password:str)->None:
         UIActions.click(self.home.log_in_icon)
         UIActions.update_text(self.login.email_address_field,user_name)
@@ -66,6 +71,10 @@ class MovieFlows:
     def navigate_to_all_category(self) -> None:
         UIActions.force_click(self.all_movies.movie_genre_button.first)
 
+    
+    @allure.step("Navigate to homepage")
+    def navigate_to_homepage(self) -> None:
+        UIActions.click(self.navigation_manu.home_button)
 
     @allure.step("Enter keyword to search bar")
     def search_a_movie_name(self,keyword:str) -> None:
@@ -156,19 +165,7 @@ class MovieFlows:
         print(f"\nThe result from AI: {result}")
         return "yes" in result
     
-    @allure.step("Navigate to homepage")
-    def navigate_to_homepage(self):
-        UIActions.click(self.navigation_manu.home_button)
-  
 
-    
-            
-
-            
-
-
-
-        
 
     
 

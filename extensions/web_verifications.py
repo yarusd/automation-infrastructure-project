@@ -74,19 +74,21 @@ class WebVerify:
 
 
     @staticmethod
-    @allure.step("Verify element is in list and count is correct")
-    def verify_in_list(keyword: str, elements: Locator, expected_count: str):
+    @allure.step("Verify search results for {search_type}")
+    def verify_search_results(keyword: str, elements: Locator, expected_count: str, search_type: str):
         elements_list = elements.all_inner_texts()
+        actual_count = len(elements_list)
+        expected_count_int = int(expected_count)
 
-        assert len(elements_list) == int(expected_count), \
-            f"List - {len(elements_list)} count does not match expected count {int(expected_count)}"
+        assert actual_count == expected_count_int, \
+            f"DDT Failure: Search by {search_type} for '{keyword}' expected {expected_count_int} results, but found {actual_count}."
 
-        #Perform this test as well, only if the len of the list is as expected
-        result = all(keyword.lower() in item.lower() for item in elements_list)
-        assert result ,f"{keyword} was not found in all list items - {elements_list}"
+        if search_type == 'movie_name':
+            result = all(keyword.lower() in item.lower() for item in elements_list)
+            assert result, f"Text mismatch: The movie name '{keyword}' was not found in all returned titles: {elements_list}"
         
 
-
+        
     @staticmethod
     @allure.step("Verify that the element contains the expected text")
     def contain_text(element: Locator, expected_text: str):
@@ -126,6 +128,20 @@ class WebVerify:
         """
         first_words = [v.split()[0].lower() for v in values]
         assert first_words == sorted(first_words), f"Titles are not sorted by first word. {first_words}"
+
+
+    @staticmethod
+    @allure.step("Verify element is in list and count is correct")
+    def verify_in_list(keyword: str, elements: Locator, expected_count: str):
+        elements_list = elements.all_inner_texts()
+
+        assert len(elements_list) == int(expected_count), \
+            f"List - {len(elements_list)} count does not match expected count {int(expected_count)}"
+
+        #Perform this test as well, only if the len of the list is as expected
+        result = all(keyword.lower() in item.lower() for item in elements_list)
+        assert result ,f"{keyword} was not found in all list items - {elements_list}"
+        
 
 
     # Soft Assertions    

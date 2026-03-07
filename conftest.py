@@ -12,19 +12,17 @@ from utils.fixture_helpers import get_browser, attach_screenshot, attach_trace
 from workflows.api.chuck_api_flows import ChuckApiFlows
 from workflows.web.chuck_web_flows import ChuckWebFlows
 from workflows.web.movie_time_flows import MovieFlows
-import os
 import time
 import uuid
-import pytest
 import sqlite3
 # Load the configuration
 CONFIG = load_config()     
 
-@pytest.fixture(scope="class")
+@pytest.fixture
 def page(playwright: Playwright, request:FixtureRequest):
     browser = get_browser(playwright,CONFIG["BROWSER_TYPE"].lower())
     context = browser.new_context(no_viewport=True)    
-    # context.tracing.start(screenshots=True, snapshots=True, sources=True)    
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)    
     page = context.new_page()
     page.goto(MOVIE_TIME_URL)
     yield page    

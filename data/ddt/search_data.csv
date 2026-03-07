@@ -1,5 +1,5 @@
-keyword,expected_total_search_results
-flow,1
-Florence,1
-action,2
+search_type,keyword,expected_total_search_results
+movie_name,flow,1
+actor_name,Florence,1
+movie_genre,action,2
 
