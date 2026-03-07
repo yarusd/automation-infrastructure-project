@@ -28,13 +28,13 @@ class WebVerify:
             WebVerify.visible(login.error_message)
             page.reload()
 
-
+    @staticmethod
     @allure.step("Verify String")
     def strings_are_equal(actual:str,expected:str,message:str=None):
         assert actual == expected,message or "EROOR - not matched"
 
   
-    
+    @staticmethod
     @allure.step("Verify Values")
     def values_are_equal(actual:float,expected:float,message=None):
         assert actual == expected,message

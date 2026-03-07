@@ -122,12 +122,11 @@ class MovieFlows:
 
 
     @allure.step("Get Navigation header text")
-    def click_and_get_page_header(self, button_name: str) -> str:
+    def click_and_get_actual_page_header(self, button_name: str) -> str:
 
         buttons = {
             "home": self.navigation_manu.home_button,
             "all movies": self.navigation_manu.all_movies_button,
-            "theme": self.navigation_manu.switch_mode_button,
             "login": self.navigation_manu.login_button,
             "register": self.navigation_manu.register_button
         }
@@ -135,6 +134,7 @@ class MovieFlows:
         target = buttons[button_name.lower()]
         target.click()
 
+        self.navigation_manu.page_header.wait_for(state="visible") 
         return self.navigation_manu.page_header.inner_text()
 
     @allure.step("Click on Theme Toggle Button")
