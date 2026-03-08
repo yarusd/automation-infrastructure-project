@@ -18,13 +18,13 @@ import sqlite3
 # Load the configuration
 CONFIG = load_config()     
 
-@pytest.fixture
+@pytest.fixture(scope = "class")
 def page(playwright: Playwright, request:FixtureRequest):
     browser = get_browser(playwright,CONFIG["BROWSER_TYPE"].lower())
     context = browser.new_context(no_viewport=True)    
     context.tracing.start(screenshots=True, snapshots=True, sources=True)    
     page = context.new_page()
-    page.goto(MOVIE_TIME_URL)
+    page._tracing_active = True
     yield page    
     # Best practice: Close page before context
     page.close()
@@ -37,9 +37,20 @@ def request_context(playwright: Playwright, request:FixtureRequest):
     yield request_context
     request_context.dispose()
 
+# @pytest.fixture(scope= "class")
+# def mobile_driver(request:FixtureRequest):
+#     driver = None
+#     yield driver
+#     driver.close()
 
-@pytest.fixture
+# def mobile_flow(mobile_driver):
+#     return MobileFlows(mobile_driver)
+
+
+
+@pytest.fixture(scope = "class")
 def movie_time_flows(page):
+    page.goto(MOVIE_TIME_URL)
     return MovieFlows(page)
 
 @pytest.fixture
@@ -79,24 +90,26 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
-    if report.when == "call":
-        # Attachments (only if the test failed)
-        if report.failed:
+    if report.when == "call" and report.failed:
             page = item.funcargs.get("page")
 
-            if page:
+            # Check if page exists AND our custom flag is True
+            if page and getattr(page, "_tracing_active", False):
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
                 unique_id = str(uuid.uuid4())[:8]
                 base_filename = f"{item.name}_{timestamp}_{unique_id}"
 
                 # Attach screenshot
-                screenshot_name = f"{CONFIG['SCREENSHOT_PREFIX']}_{base_filename}.png"
-                screenshot_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], screenshot_name)
+                screenshot_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], f"{CONFIG['SCREENSHOT_PREFIX']}_{base_filename}.png")
                 attach_screenshot(page, item.name, screenshot_path)
 
-                # Attach trace
+                # Attach trace (only called if _tracing_active is True)
                 trace_name = f"{CONFIG['TRACE_PREFIX']}_{item.name}_{timestamp}.zip"
                 trace_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], trace_name)
-                attach_trace(page, item.name, trace_path)
-
-
+                
+                try:
+                    attach_trace(page, item.name, trace_path)
+                    # Set to False so we don't try to stop it again elsewhere
+                    page._tracing_active = False 
+                except Exception as e:
+                    print(f"Failed to stop/attach trace: {e}")

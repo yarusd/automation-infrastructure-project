@@ -3,9 +3,9 @@ from data.api.chuck_api_data import *
 from extensions.api_verifications import APIVerify
 from extensions.web_verifications import WebVerify
 from workflows.api.chuck_api_flows import ChuckApiFlows
+from workflows.web.chuck_web_flows import ChuckWebFlows
 from utils.common_ops import get_db_categories
 
-from workflows.web.chuck_web_flows import ChuckWebFlows
 
 
 class TestChuckAPI:

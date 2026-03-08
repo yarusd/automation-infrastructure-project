@@ -1,7 +1,6 @@
 import os
 import allure
 from playwright.sync_api import Page
-from data.web.movie_time_data import *
 from extensions.ui_actions import UIActions
 from utils.common_ops import extract_digits_from_text
 from google import genai

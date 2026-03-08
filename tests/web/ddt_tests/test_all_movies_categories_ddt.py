@@ -5,7 +5,7 @@ from extensions.web_verifications import WebVerify
 from utils.common_ops import read_data_from_csv
 from workflows.web.movie_time_flows import MovieFlows
 
-CATEGORY_DATA_PATH = r"data\ddt\category_data.csv"
+CATEGORY_DATA_PATH = r"data\ddt\categories_data.csv"
 
 class TestMovieCategoryDDT:
 

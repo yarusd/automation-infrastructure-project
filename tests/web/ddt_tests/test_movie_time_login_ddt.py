@@ -1,12 +1,7 @@
 
-
-
-
 import allure
 import pytest
-
 from data.web.movie_time_data import *
-from extensions.ui_actions import UIActions
 from extensions.web_verifications import WebVerify
 from utils.common_ops import read_data_from_csv
 from workflows.web.movie_time_flows import MovieFlows
