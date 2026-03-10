@@ -10,7 +10,7 @@ This project is a comprehensive automated testing suite designed as a final grad
 * **Reporting:** Allure Reports
 * **Database:** SQLite (for data-driven testing and validation)
 
---
+---
 
 ## 🧪 Test Coverage
 
