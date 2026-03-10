@@ -21,13 +21,16 @@ def load_config():
         raise FileNotFoundError(f"ERROR: Could not find config.json {CONFIG_PATH}") from e
     
 def read_data_from_csv(file_path):
-     """Reads  data from a CSV file. """
-     data = []
-     with open(file_path, 'r') as csvfile:
+    """Reads data from a CSV file. """
+    data = []
+    # Fix: Convert Windows backslashes to forward slashes for Linux compatibility
+    normalized_path = file_path.replace('\\', '/') 
+    
+    with open(normalized_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             data.append(row)
-     return data
+    return data
 
 
 def extract_digits_from_text(text: str) -> float:
