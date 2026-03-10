@@ -1,5 +1,5 @@
 search_type,keyword,expected_total_search_results
 movie_name,flow,1
 actor_name,Florence,1
-movie_genre,action,2
+movie_genre,action,9
 
