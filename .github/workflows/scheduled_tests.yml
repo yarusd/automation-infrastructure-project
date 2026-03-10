@@ -26,5 +26,6 @@ jobs:
         env:
           
           PYTHONPATH: .
+          MY_API_KEY: ${{ secrets.MY_API_KEY }}  
         
         run: xvfb-run pytest -s -v
