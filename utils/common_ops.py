@@ -5,10 +5,10 @@ import re
 
 def load_config():
     """Loads the configuration from config.json and returns it as a dictionary."""
-    # Get the absolute path of the current directory where conftest.py is located
+    # Get the absolute path of the current directory where common_ops.py is located
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-    # Construct the correct path for config.json (move up one level if necessary)
+    
+    # Construct the correct path for config.json
     CONFIG_PATH = os.path.join(BASE_DIR, "../config/config.json")
 
     print(f"DEBUG: Looking for config.json at {CONFIG_PATH}")
@@ -16,9 +16,16 @@ def load_config():
     # Load the configuration from config.json
     try:
         with open(CONFIG_PATH, "r") as config_file:
-            return json.load(config_file)
+            config_data = json.load(config_file)
+            
+            # Auto-detect CI environment (GitHub Actions)
+            # If 'CI' environment variable is present, force HEADLESS mode to True
+            if os.getenv('CI'):
+                config_data['HEADLESS'] = True
+                
+            return config_data
     except FileNotFoundError as e:
-        raise FileNotFoundError(f"ERROR: Could not find config.json {CONFIG_PATH}") from e
+        raise FileNotFoundError(f"ERROR: Could not find config.json at {CONFIG_PATH}") from e
     
 def read_data_from_csv(file_path):
     """Reads data from a CSV file. """
