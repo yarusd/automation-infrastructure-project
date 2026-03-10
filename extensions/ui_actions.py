@@ -13,12 +13,6 @@ class UIActions:
     def navigate_to(page:Page,url:str):
         page.goto(url)
 
-    
-    # @staticmethod
-    # @allure.step("Click on element")
-    # def click_on_list(element: List[Locator], timeout: int = DEFAULT_TIMEOUT) -> None:
-    #     element.wait_for(state="visible", timeout=timeout)
-    #     element.click(timeout=timeout)
 
     @staticmethod
     @allure.step("Click on element")
