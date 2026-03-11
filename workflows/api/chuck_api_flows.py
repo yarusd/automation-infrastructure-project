@@ -37,10 +37,10 @@ class ChuckApiFlows:
         return keyword_joke.json()["total"]
     
 
-    @allure.step("Send multiply get a joke request")
-    def send_multiple_jokes(self,end:int) ->list:
+    @allure.step("Send multiple get a joke request")
+    def send_multiple_jokes(self,amount:int) ->list:
         responses = []
-        for i in range(end):
+        for i in range(amount):
             response = self.get_a_joke()
             responses.append(response)
         return responses

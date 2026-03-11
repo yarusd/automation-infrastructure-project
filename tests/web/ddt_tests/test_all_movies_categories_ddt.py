@@ -15,8 +15,8 @@ class TestMovieCategoryDDT:
     def test_verify_categories_count_ddt(self, movie_time_flows: MovieFlows, category_data):
         movie_time_flows.navigate_to_all_movies()
         actual_count = movie_time_flows.get_movie_count_by_genre_name(category_data["genre_name"])
-        expected_count = int(category_data["expected_count"])
-        WebVerify.values_are_equal(actual_count,expected_count,message=f"Count mismatch for genre: {category_data['genre_name']}")
+        expected_count = category_data["expected_count"]
+        WebVerify.values_are_equal(actual_count,expected_count,f"Count mismatch for genre: {category_data['genre_name']}")
 
 
 

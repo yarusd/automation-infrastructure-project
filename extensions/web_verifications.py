@@ -1,10 +1,8 @@
 import re
-
 from playwright.sync_api import Locator, expect
 import pytest
 from smart_assertions import soft_assert, verify_expectations
 import allure
-
 from extensions.ui_actions import UIActions
 from page_objects.web.movie_time_login_page import MovieTimeLoginPage
 
@@ -31,13 +29,13 @@ class WebVerify:
     @staticmethod
     @allure.step("Verify String")
     def strings_are_equal(actual:str,expected:str,message:str=None):
-        assert actual == expected,message or "EROOR - not matched"
+        assert actual.upper() == expected.upper(),message or "EROOR - not matched"
 
   
     @staticmethod
     @allure.step("Verify Values")
-    def values_are_equal(actual:float,expected:float,message=None):
-        assert actual == expected,message
+    def values_are_equal(actual,expected,message=None):
+        assert float(actual) == float(expected),message
 
     @staticmethod
     @allure.step("Verify that the element is visible")
@@ -119,7 +117,7 @@ class WebVerify:
         """
         expect(element).to_have_value(expected_value)
     
-    
+            
     @staticmethod
     @allure.step("Verify that list is sorted by first word (A-Z)")
     def list_is_sorted_by_first_word(values: list[str]):
@@ -128,6 +126,7 @@ class WebVerify:
         """
         first_words = [v.split()[0].lower() for v in values]
         assert first_words == sorted(first_words), f"Titles are not sorted by first word. {first_words}"
+
 
 
     @staticmethod

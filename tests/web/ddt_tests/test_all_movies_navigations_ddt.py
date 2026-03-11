@@ -16,6 +16,6 @@ class TestAllMoviesNavigationDDT:
     def test_verify_navigation_menu_headers(self, movie_time_flows: MovieFlows, nav_data):
         actual_header = movie_time_flows.click_and_get_actual_page_header(nav_data["header_name"])
         expected_header = nav_data["expected_header"]
-        WebVerify.strings_are_equal(actual_header.upper(), expected_header.upper())
+        WebVerify.strings_are_equal(actual_header, expected_header)
 
 

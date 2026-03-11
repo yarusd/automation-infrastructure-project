@@ -10,7 +10,7 @@ ALL_MOVIES_DATA_PATH = r"data\ddt\search_data.csv"
 
 class TestAllMoviesSearchDDT:
 
-    @allure.title("Test - Verify SEARCH with DDT")
+    @allure.title("Test - Verify SEARCH bar with DDT")
     @allure.step("This test verify SEARCH results")
     @pytest.mark.parametrize("movies", get_search_test_data(ALL_MOVIES_DATA_PATH))
     def test_verify_search_bar_results_ddt(self,movie_time_flows: MovieFlows,movies,navigate_to_all_movies_page):

@@ -63,27 +63,31 @@ def get_db_categories(conn):
 
 def get_search_test_data(file_path):
     """
-    Reads search data from CSV and applies xfail markers 
-    to specific keywords known to have application bugs.
+    Reads search data from CSV, converts types, and applies xfail markers 
+    based on the search type.
     """
     raw_data = read_data_from_csv(file_path)
     processed_data = []
     
-    # List of keywords that trigger known functional bugs in the application
-    # Bug: Search functionality is limited to movie names only (Actor/Genre fails)
-    KNOWN_SEARCH_BUGS = ["Florence", "action"]
+    # הגדרת סוגי החיפוש שידוע שהם שבורים כרגע באפליקציה
+    KNOWN_BROKEN_TYPES = ["actor_name", "movie_genre"]
     
     for row in raw_data:
-        if row["keyword"] in KNOWN_SEARCH_BUGS:
-            # Wrap the row in a pytest.param to attach the xfail metadata
+        # המרת תוצאה צפויה למספר שלם (כי מה-CSV זה מגיע כסטרינג)
+        row["expected_total_search_results"] = int(row["expected_total_search_results"])
+        
+        # בדיקה אם סוג החיפוש הנוכחי נמצא ברשימת הבאגים הידועים
+        if row["search_type"] in KNOWN_BROKEN_TYPES:
             param = pytest.param(
                 row, 
                 marks=pytest.mark.xfail(
-                    reason=f"Application Bug: Search by {row['search_type']} is currently not supported"
+                    reason=f"Application Bug: Search by {row['search_type']} is not yet implemented",
+                    strict=False # מאפשר לטסט לעבור כ-XPASS אם פתאום זה תוקן
                 )
             )
         else:
             param = row
+            
         processed_data.append(param)
         
     return processed_data

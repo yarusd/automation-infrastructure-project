@@ -16,7 +16,7 @@ class TestLogineDDT:
     @pytest.mark.parametrize("login_data",read_data_from_csv(LOGIN_DATA_PATH))
     def test_user_login_authentication_ddt(self,movie_time_flows:MovieFlows,login_data):
         movie_time_flows.sign_in(login_data["username"], login_data["password"])
-        WebVerify.verify_log_in(movie_time_flows.page,movie_time_flows.login,login_data["expected_status"])                 
+        WebVerify.verify_log_in(movie_time_flows.page, movie_time_flows.login ,login_data["expected_status"])                 
                               
 
 

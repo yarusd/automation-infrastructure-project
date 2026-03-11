@@ -39,20 +39,20 @@ class TestChuckAPI:
         APIVerify.status_code( chuck_flows.search_for_joke(SEARCH_VALUE),EXPECTED_STATUS_SUCCESS_CODE)
 
 
-    @allure.title("Verify Joke Value is Unique")
-    @allure.description("Fetches two random jokes and verifies that their text values are unique.")
+    @allure.title("Verify Joke id is Unique")
+    @allure.description("Fetches two random jokes and verifies that their joke id are unique.")
     def test06_verify_joke_id_is_uniqe(self, chuck_flows:ChuckApiFlows):
         first_id = chuck_flows.get_joke_value(ID)
         second_id = chuck_flows.get_joke_value(ID)
-        APIVerify.soft_assert(first_id != second_id,f" {first_id} == {second_id}")
+        APIVerify.soft_assert_verify_not_equals(first_id, second_id)
         APIVerify.assert_all()        
 
-    @allure.title("Verify Joke ID is Unique")
-    @allure.description("Fetches two random jokes and verifies that IDs are unique.")    
+    @allure.title("Verify Joke value is Unique")
+    @allure.description("Fetches two random jokes and verifies that value are unique.")    
     def test07_verify_joke_value_is_uniqe(self, chuck_flows:ChuckApiFlows):
-        value_1 = chuck_flows.get_joke_value(VALUE)
-        value_2 = chuck_flows.get_joke_value(VALUE)
-        APIVerify.soft_assert(value_1 != value_2,f"{value_1} == {value_2}")
+        first_value = chuck_flows.get_joke_value(VALUE)
+        second_value = chuck_flows.get_joke_value(VALUE)
+        APIVerify.soft_assert_verify_not_equals(first_value, second_value)
         APIVerify.assert_all()        
 
     @allure.title("Validate First Keyword Has More Jokes Than Second - API")
@@ -60,7 +60,7 @@ class TestChuckAPI:
     def test_08_verify_who_has_more_jokes(self,chuck_flows:ChuckApiFlows):
         keyword_1_total = chuck_flows.get_joke_keyword_search_amount(SEARCH_KEYWORD_1)
         keyword_2_total = chuck_flows.get_joke_keyword_search_amount(SEARCH_KEYWORD_2)
-        APIVerify.compare_values(keyword_1_total,keyword_2_total)
+        APIVerify.verify_greater_than(keyword_1_total,keyword_2_total)
 
     @allure.title("Verify Random Joke Matches Web Joke")
     @allure.description("Verifies that a random joke from API matches the joke displayed on the web page.")
@@ -82,7 +82,7 @@ class TestChuckAPI:
     @allure.title("Send Multiple Random Jokes and Verify Status 200")
     @allure.description("Sends multiple random joke requests via API and verifies that each response returns status code 200 using soft assertions.")
     def test10_Verify_sending_multiply_requests_status_ok(self,chuck_flows: ChuckApiFlows):
-        APIVerify.verify_responses_status_ok(chuck_flows.send_multiple_jokes(GET_REQUEST_COUNT), EXPECTED_STATUS_SUCCESS_CODE)
+        APIVerify.soft_verify_statuses(chuck_flows.send_multiple_jokes(GET_REQUEST_COUNT), EXPECTED_STATUS_SUCCESS_CODE)
         APIVerify.assert_all()        
 
 

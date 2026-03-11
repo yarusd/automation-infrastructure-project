@@ -17,19 +17,14 @@ class APIVerify:
         """
         assert actual != unexpected, f"{message}: {actual} == {unexpected}"
 
-
     @staticmethod
-    def compare_values(value1: int, value2: int):
+    def verify_greater_than(actual: int, expected_minimum: int, message="Value comparison failed"):
         """
-        Compares two integer values and asserts that the first value is greater than the second.
-        Provides a clear assertion message indicating the relationship.
+        Verifies that 'actual' is strictly greater than 'expected_minimum'.
         """
-        if value1 > value2:
-            assert value1 > value2
-        elif value1 < value2:
-            raise AssertionError(f"{value2} is greater than {value1}")
-        else:
-            raise AssertionError(f"Both values are equal: {value1}")
+        # האסרט עצמו כבר מבצע את ה-IF הפנימי. אם התנאי לא מתקיים, הוא זורק AssertionError.
+        assert actual > expected_minimum, \
+            f"{message}: Expected {actual} to be greater than {expected_minimum}"
 
 
     @staticmethod
@@ -60,7 +55,12 @@ class APIVerify:
             value = response_data[field]
             assert value is not None, f"Field '{field}' is None"
             assert value != "", f"Field '{field}' is empty"
-    
+
+            
+    @staticmethod
+    def list_equals(actual_list, expected_list, message):
+        assert sorted(actual_list) == sorted(expected_list), f"{message} \nActual: {actual_list} \nExpected: {expected_list}"
+   
     
     @staticmethod
     def json_contains(response_data, expected_data: dict):
@@ -74,39 +74,32 @@ class APIVerify:
             )
 
     # Soft Assertions
-    @staticmethod
-    def soft_assert_status_code(response, expected_status_code: int):
-        """
-        Soft asserts that the API response status code matches the expected status code.
-        """
-        if isinstance(response, dict):  
-            APIVerify.errors.append("Expected a Playwright response object, got a dictionary.")
-
-        elif response.status != expected_status_code:
-            APIVerify.errors.append(
-                f"Expected status code {expected_status_code}, but got {response.status}."
-            )
-
-
-
     errors = []
 
+
     @staticmethod
-    def verify_responses_status_ok(responses: list, expected_status_code: int = 200):
+    def soft_verify_statuses(responses: list, expected: int):
         """
-        Iterates over all APIResponse objects and soft asserts that each has status 200.
+        עובר על רשימת תגובות ומבצע Soft Assert לכל אחת.
+        מוציא את הלוגיקה והלופים מהטסט אל שכבת האימות.
         """
-        for i, response in enumerate(responses, start=1):
-            if isinstance(response, dict):
-                APIVerify.errors.append(f"Expected APIResponse, got dict at request #{i}")
-            elif response.status != expected_status_code:
-                APIVerify.errors.append(
-                    f"Request #{i}: Expected status {expected_status_code}, got {response.status}"
-                )
+        for i, res in enumerate(responses, 1):
+            # בניית הודעה ברורה לכל בקשה ברשימה
+            msg = f"Request #{i}: Expected status {expected}, but got {res.status}"
+            
+            # קריאה ל-Soft Assert הפנימי - אפס פעולות לוגיות מחוץ למחלקה
+            APIVerify.soft_assert(res.status == expected, msg)
 
 
 
-    errors = []
+    @staticmethod
+    def soft_assert_verify_not_equals(actual, unexpected, message=None):
+        """
+        מבצע Soft Assert שהערכים אינם שווים - ללא פעולות בטסט עצמו.
+        """
+        condition = (actual != unexpected)
+        APIVerify.soft_assert(condition, f"{message}: {actual} == {unexpected}")
+
 
     @staticmethod
     def soft_assert(condition: bool, message: str):
@@ -124,6 +117,3 @@ class APIVerify:
             APIVerify.errors.clear()  # Clear errors after raising
             raise AssertionError(f"Soft assertion failures:\n{error_message}")
     
-    @staticmethod
-    def list_equals(actual_list, expected_list, message):
-        assert sorted(actual_list) == sorted(expected_list), f"{message} \nActual: {actual_list} \nExpected: {expected_list}"
