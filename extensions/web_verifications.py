@@ -4,38 +4,89 @@ import pytest
 from smart_assertions import soft_assert, verify_expectations
 import allure
 from extensions.ui_actions import UIActions
-from page_objects.web.movie_time_login_page import MovieTimeLoginPage
+from workflows.web.movie_time_flows import MovieFlows
 
 class WebVerify:
   
     @staticmethod    
     @allure.step("Verify that the element has text")
     def text(element: Locator, expected_text: str):
-        """
-        Verifies that the text of the element matches the expected text.
-        """
+   
         expect(element).to_have_text(expected_text)
 
-    @staticmethod
-    @allure.step("Verify login flow:")
-    def verify_log_in(page,login:MovieTimeLoginPage,expected_status:str)->str:
-       if expected_status == "True":
-            WebVerify.visible(login.actual_log_in_header)
-            UIActions.click(login.log_out_button)
-       else:
-            WebVerify.visible(login.error_message)
-            page.reload()
 
     @staticmethod
-    @allure.step("Verify String")
-    def strings_are_equal(actual:str,expected:str,message:str=None):
-        assert actual.upper() == expected.upper(),message or "EROOR - not matched"
-
+    @allure.step("Verify Auth Flow Result")
+    def verify_auth_result(movie_flows: MovieFlows, expected_status: str):
+        if expected_status == "True":
+            WebVerify.visible(movie_flows.login.log_out_button)
+            UIActions.click(movie_flows.login.log_out_button)
+        else:
+            WebVerify.visible(movie_flows.login.error_message.first)
+            movie_flows.page.reload()
+        
   
+
     @staticmethod
-    @allure.step("Verify Values")
+    @allure.step("Verify String are equal")
+    def strings_are_equal(actual:str,expected:str,message:str=None):
+        assert actual.upper() == expected.upper(),message or "Expected same strings but both were different"
+
+    @staticmethod
+    @allure.step("Verify String are not equal")
+    def strings_are_not_equal(actual:str,expected:str,message:str=None):
+        assert actual.upper() != expected.upper(),message or "Expected different strings but both were equal"
+
+    @staticmethod
+    @allure.step("Verify Values are equal")
     def values_are_equal(actual,expected,message=None):
-        assert float(actual) == float(expected),message
+        assert float(actual) == float(expected),message or "Expected equal strings but both were different"
+
+    @staticmethod
+    @allure.step("Verify Values are not equal")
+    def values_are_not_equal(actual,expected,message=None):
+        assert float(actual) != float(expected),message or "Expected different values but both were equal"
+        
+
+    def slider_navigation(element1:str, element2:str, element3:str):
+      assert element1 != element2, "The movie didn't change after clicking NEXT arrow"
+      assert element1 == element3, f"Clicking PREVIOUS arrow should have returned to {element1}"
+
+
+
+    @staticmethod
+    @allure.step("Verify no duplicate items in list")
+    def no_duplicates(elements:list):
+        unique_titles = set(elements)
+        if len(elements) != len(elements):
+            duplicates = [title for title in unique_titles if elements.count(title) > 1]
+            raise AssertionError(f"Found duplicate movies: {duplicates}")
+
+
+    @staticmethod
+    @allure.step("Verify data completeness for all movies")
+    def verify_all_movie_details(movie_flows: MovieFlows):
+        cards = movie_flows.all_movies.movie_cards.all()
+        report_errors = "" 
+
+        for index, card in enumerate(cards):
+        
+            title = UIActions.get_text(card.locator(".mtitle"))
+            rating = UIActions.get_text(card.locator(".mmeta span").nth(0))
+            year = UIActions.get_text(card.locator(".mmeta span").nth(2))
+            duration = UIActions.get_text(card.locator(".mmeta span").nth(4))
+            genre = UIActions.get_text(card.locator(".gtag"))
+
+            movie_id = title if title else f"Movie #{index}"
+
+            if not title:  report_errors += f"\n- Index {index}: Missing Title"
+            if not rating: report_errors += f"\n- {movie_id}: Missing Rating"
+            if not year:   report_errors += f"\n- {movie_id}: Missing Year"
+            if not duration: report_errors += f"\n- {movie_id}: Missing duration"
+            if not genre: report_errors += f"\n- {movie_id}: Missing genre"
+
+        assert report_errors == "", f"Found missing information in movie cards: {report_errors}"
+
 
     @staticmethod
     @allure.step("Verify that the element is visible")
@@ -97,6 +148,7 @@ class WebVerify:
         # regex case-insensitive
          expect(element).to_contain_text(re.compile(expected_text, re.IGNORECASE))
 
+
     @staticmethod
     @allure.step("Verify that a list of strings contains the expected text")
     def contain_text_list(elements: list[str], expected_text: str):
@@ -109,6 +161,7 @@ class WebVerify:
         if not re.search(expected_text, combined_text, re.IGNORECASE):
             raise AssertionError(f"Expected '{expected_text}' to be in '{combined_text}'")
     
+
     @staticmethod
     @allure.step("Verify that the element has the expected value")
     def value(element: Locator, expected_value: str):
@@ -121,9 +174,7 @@ class WebVerify:
     @staticmethod
     @allure.step("Verify that list is sorted by first word (A-Z)")
     def list_is_sorted_by_first_word(values: list[str]):
-        """
-        בודק שהרשימה ממוינת לפי המילה הראשונה בלבד (A-Z), התעלמות מה-Case
-        """
+    
         first_words = [v.split()[0].lower() for v in values]
         assert first_words == sorted(first_words), f"Titles are not sorted by first word. {first_words}"
 
@@ -181,7 +232,6 @@ class WebVerify:
     @staticmethod
     @allure.step("Verify all elements contain: {expected_text}")
     def all_elements_contain_text(locator: Locator, expected_text: str):
-        # המתן שהאלמנטים יהיו גלויים
         locator.first.wait_for(state="visible")
         
         titles = locator.all_text_contents()

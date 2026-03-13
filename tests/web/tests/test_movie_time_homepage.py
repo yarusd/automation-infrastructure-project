@@ -36,3 +36,27 @@ class TestMovieTimeHomepage:
         movie_time_flows.click_on_Theme_Toggle()
         is_light_mode = movie_time_flows.verify_theme_with_vision(expected_mode="light mode")
         WebVerify.is_true(is_light_mode, "Error - AI detected that the site is NOT in light mode")
+
+    
+    @allure.title("Verify 'Already have an account' Navigation")
+    @allure.description("Validate that clicking the login link on the Register page correctly redirects the user to the Login page.")
+    def test05_verify_navigation_to_login_page(self,movie_time_flows: MovieFlows):
+        movie_time_flows.go_to_login_page_from_register()
+        WebVerify.visible(movie_time_flows.login.login_header)
+    
+    @allure.title("Verify homepage movies slider functional")
+    @allure.description("Verify movie details is changed by clicking left and right arrows")
+    def test06_verify_movie_slider_navigation(self,movie_time_flows: MovieFlows,navigate_to_homepage):
+        movie_title = movie_time_flows.home.movie_on_slider
+        current_movie_title = movie_time_flows.get_text(movie_title)
+
+        movie_time_flows.click_on_next_slider()
+        next_movie_title = movie_time_flows.get_text(movie_title)
+
+        movie_time_flows.click_on_previous_slider()
+        previous_movie_title = movie_time_flows.get_text(movie_title)
+        WebVerify.slider_navigation(current_movie_title,next_movie_title,previous_movie_title)
+        
+
+
+

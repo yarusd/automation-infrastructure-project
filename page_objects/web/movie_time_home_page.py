@@ -9,4 +9,7 @@ class MovieTimeHomePage:
         self.actual_booking_movie_error_message = page.locator("[class='alert err']")
         self.details_button = page.locator("[data-testid='details-btn-1']")
         self.log_in_icon = page.locator("[data-testid='btn-login']")
+        self.right_slider = page.locator("[data-testid='fb-next']")
+        self.left_slider = page.locator("[data-testid='fb-prev']")
+        self.movie_on_slider = page.locator("//div[@style='max-width: 520px;']/h2")
         

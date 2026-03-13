@@ -12,5 +12,9 @@ class MovieTimeAllMoviesPage:
         self.sorting_selector = page.locator("[data-testid='sort-select']")
         self.movie_rating = page.locator("//div[@class='mmeta']/span[1]")
         self.movie_year = page.locator("//div[@class='mmeta']/span[3]")
+        self.movie_genre = page.locator("[class='gtag']")
+        self.movie_duration = page.locator("//div[@class='mmeta']/span[5]")
+        self.movie_cards = page.locator("[class='minfo']")
+
 
 

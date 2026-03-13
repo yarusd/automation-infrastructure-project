@@ -1,6 +1,7 @@
 from playwright.sync_api import Page
 class MovieTimeLoginPage:
     def __init__(self,page:Page):
+        self.login_header = page.locator("[class='authtitle']")
         self.email_address_field = page.locator("[data-testid='input-email']")
         self.password_field = page.locator("[data-testid='input-password']")
         self.log_in_button = page.locator("[data-testid='btn-submit-login']")

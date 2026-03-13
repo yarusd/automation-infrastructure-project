@@ -27,6 +27,20 @@ class TestMovieTimeAllMoviesPage:
         actual_first_movie = movie_time_flows.get_top_movie(movie_time_flows.get_year_list())
         WebVerify.values_are_equal(actual_first_movie,RECENT_YEAR)
 
+    @allure.title("Verification of Movie Gallery Uniqueness")
+    @allure.description("Ensure no movies duplication")
+    def test_04_verify_no_duplicate_movies(self,movie_time_flows: MovieFlows,navigate_to_all_movies_page):
+        movie_list = movie_time_flows.get_title_list_text()
+        WebVerify.no_duplicates(movie_list)
+
+    @allure.title("Data Completeness: Verify All Movies card Details")
+    @allure.description("Ensures no movie card has missing fields (Title, Year, Rating, Genre)")
+    def test05_verify_not_null_variables_in_movie_pages(self,movie_time_flows: MovieFlows, navigate_to_all_movies_page):
+        WebVerify.verify_all_movie_details(movie_time_flows)
+
+
+
+
     
 
 
