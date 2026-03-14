@@ -65,9 +65,14 @@ class MovieFlows:
 
     
     @allure.step("Click on login here from register page")
-    def go_to_login_page_from_register(self):
+    def go_to_login_page_from_register(self) -> None:
         UIActions.click(self.navigation_manu.register_button)
         UIActions.click(self.register.login_here_button)
+    
+    @allure.step("Click on register here from login page")
+    def go_to_register_page_from_login_page(self) -> None:
+        UIActions.click(self.login.log_in_button)
+        UIActions.click(self.login.register_here_button)
     
 
     @allure.step("Navigte to:")

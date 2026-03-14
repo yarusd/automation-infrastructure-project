@@ -44,6 +44,15 @@ class TestMovieTimeHomepage:
         movie_time_flows.go_to_login_page_from_register()
         WebVerify.visible(movie_time_flows.login.login_header)
     
+
+    @allure.title("Verify 'Register here' button Navigation")
+    @allure.description("Validate clicking the Register here button on login page redirects the user to the register page.")
+    def test006_verify_navigation_to_register_page(self,movie_time_flows: MovieFlows):
+        movie_time_flows.go_to_login_page_from_register()
+        WebVerify.visible(movie_time_flows.register.register_header)
+
+    
+    
     @allure.title("Verify homepage movies slider functional")
     @allure.description("Verify movie details is changed by clicking left and right arrows")
     def test06_verify_movie_slider_navigation(self,movie_time_flows: MovieFlows,navigate_to_homepage):

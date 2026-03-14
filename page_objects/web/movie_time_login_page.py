@@ -8,3 +8,4 @@ class MovieTimeLoginPage:
         self.log_out_button = page.locator("[data-testid='btn-logout']")
         self.actual_log_in_header = page.locator("[class='hero-t']")
         self.error_message = page.locator('[data-testid*="error"]')
+        self.register_here_button = page.locator("[data-testid='link-register']")

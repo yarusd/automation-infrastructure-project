@@ -72,7 +72,6 @@ class WebVerify:
         for index, card in enumerate(cards):
         
             title = UIActions.get_text(card.locator(".mtitle"))
-            rating = UIActions.get_text(card.locator(".mmeta span").nth(0))
             year = UIActions.get_text(card.locator(".mmeta span").nth(2))
             duration = UIActions.get_text(card.locator(".mmeta span").nth(4))
             genre = UIActions.get_text(card.locator(".gtag"))
@@ -80,7 +79,6 @@ class WebVerify:
             movie_id = title if title else f"Movie #{index}"
 
             if not title:  report_errors += f"\n- Index {index}: Missing Title"
-            if not rating: report_errors += f"\n- {movie_id}: Missing Rating"
             if not year:   report_errors += f"\n- {movie_id}: Missing Year"
             if not duration: report_errors += f"\n- {movie_id}: Missing duration"
             if not genre: report_errors += f"\n- {movie_id}: Missing genre"

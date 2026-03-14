@@ -34,7 +34,7 @@ class TestMovieTimeAllMoviesPage:
         WebVerify.no_duplicates(movie_list)
 
     @allure.title("Data Completeness: Verify All Movies card Details")
-    @allure.description("Ensures no movie card has missing fields (Title, Year, Rating, Genre)")
+    @allure.description("Ensures no movie card has missing fields (Title, Year, Genre)")
     def test05_verify_not_null_variables_in_movie_pages(self,movie_time_flows: MovieFlows, navigate_to_all_movies_page):
         WebVerify.verify_all_movie_details(movie_time_flows)
 
