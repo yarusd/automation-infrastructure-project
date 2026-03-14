@@ -5,7 +5,7 @@ from extensions.web_verifications import WebVerify
 from workflows.web.movie_time_flows import MovieFlows
 
 class TestMovieTimeHomepage:
-
+    
     
     @allure.title("Homepage Movie Display Count Validation")
     @allure.description("Validates UI movie count vs header indicator")
