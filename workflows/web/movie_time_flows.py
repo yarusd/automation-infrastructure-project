@@ -44,6 +44,7 @@ class MovieFlows:
     @allure.step("Get movie description")
     def get_movie_description(self) -> str:
         return UIActions.get_text(self.movie_page.movie_description)
+    
 
     @allure.step("Sign in")
     def sign_in(self,user_name:str,password:str)->None:
@@ -51,7 +52,28 @@ class MovieFlows:
         UIActions.update_text(self.login.email_address_field,user_name)
         UIActions.update_text(self.login.password_field,password)
         UIActions.click(self.login.log_in_button)
+    
+    @allure.step("Fill register form")
+    def fill_register_form(self,full_name:str, email:str, password:str ,confirm_pass:str)->None:
+        UIActions.click(self.navigation_manu.register_button)
+        UIActions.update_text(self.register.full_name_field, full_name)
+        UIActions.update_text(self.register.email_field, email)
+        UIActions.update_text(self.register.password_field, password)
+        UIActions.update_text(self.register.confirm_password_field, confirm_pass)
+        UIActions.click(self.register.creat_account_button)
+    
 
+    
+    @allure.step("Click on login here from register page")
+    def go_to_login_page_from_register(self) -> None:
+        UIActions.click(self.navigation_manu.register_button)
+        UIActions.click(self.register.login_here_button)
+    
+    @allure.step("Click on register here from login page")
+    def go_to_register_page_from_login_page(self) -> None:
+        UIActions.click(self.login.log_in_button)
+        UIActions.click(self.login.register_here_button)
+    
 
     @allure.step("Navigte to:")
     def navigate_to(self,url:str)->None:
@@ -61,12 +83,21 @@ class MovieFlows:
     def get_home_header(self)->str:
         return UIActions.get_text(self.home.header)
     
+    @allure.step("Get element text")
+    def get_text(self, element) -> str:
+        return UIActions.get_text(element)
+
+    def click_on_next_slider(self) -> None:
+        UIActions.click(self.home.right_slider)
+
+    def click_on_previous_slider(self) -> None:
+        UIActions.click(self.home.left_slider)
 
     @allure.step("Navigate to all Movies:")
     def navigate_to_all_movies(self) -> None:
         UIActions.force_click(self.all_movies.all_movies_header)
 
-    @allure.step("Navigate to all section")
+    @allure.step("Navigate to 'all' category")
     def navigate_to_all_category(self) -> None:
         UIActions.force_click(self.all_movies.movie_genre_button.first)
 
@@ -74,6 +105,7 @@ class MovieFlows:
     @allure.step("Navigate to homepage")
     def navigate_to_homepage(self) -> None:
         UIActions.click(self.navigation_manu.home_button)
+
 
     @allure.step("Enter keyword to search bar")
     def search_a_movie_name(self,keyword:str) -> None:
@@ -122,7 +154,6 @@ class MovieFlows:
 
     @allure.step("Get Navigation header text")
     def click_and_get_actual_page_header(self, button_name: str) -> str:
-
         buttons = {
             "home": self.navigation_manu.home_button,
             "all movies": self.navigation_manu.all_movies_button,
@@ -135,6 +166,7 @@ class MovieFlows:
 
         self.navigation_manu.page_header.wait_for(state="visible") 
         return self.navigation_manu.page_header.inner_text()
+    
 
     @allure.step("Click on Theme Toggle Button")
     def click_on_Theme_Toggle(self) -> None:

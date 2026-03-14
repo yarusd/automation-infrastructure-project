@@ -1,0 +1,8 @@
+full_name,email,password,confirm_password,expected_status
+Israel Israeli,test_success@example.com,Pass123!,Pass123!,True
+Israel,invalid_email, Pass123!,Pass123!,False
+Israel Israeli, test@example.com, Pass123!, Diff123!,False
+"", test@example.com, Pass123!, Pass123!,False
+Israel Israeli, existing@example.com, "", Pass123!,False
+neomi levi, hebrew@example.com, 123, 123,False,
+,,,,False
