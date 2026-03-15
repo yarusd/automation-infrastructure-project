@@ -17,3 +17,34 @@ class MobileFlows:
     @allure.step("Get ListView count from page source")
     def get_list_view_count_from_source(self) -> int:
         return MobileActions.get_text_count_in_source(self.driver, "ListView")
+    
+
+    @allure.step("Get current device orientation status")
+    def get_device_orientation(self) -> str:
+        """
+        Business flow to retrieve the device orientation.
+        """
+        return MobileActions.get_orientation(self.driver)
+    
+    @allure.step("Verify device is responsive")
+    def check_device_responsiveness(self):
+        """
+        Flow to ensure the device is alive and communicating with the driver.
+        Returns system time and display resolution.
+        """
+        return MobileActions.get_device_metadata(self.driver)
+    
+
+    @allure.step("Get battery percentage")
+    def get_battery_status(self) -> int:
+        """
+        Retrieves the battery level using the Action layer.
+        """
+        return MobileActions.get_battery_level(self.driver)
+
+    @allure.step("Get Wi-Fi connection status")
+    def get_wifi_status(self) -> bool:
+        """
+        Retrieves the Wi-Fi status using the Action layer.
+        """
+        return MobileActions.is_wifi_on(self.driver)
