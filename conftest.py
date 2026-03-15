@@ -10,6 +10,7 @@ from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from utils.common_ops import load_config
 from utils.fixture_helpers import get_browser, attach_screenshot, attach_trace
+from workflows.Mobile.mobile_flows_yarus import MobileFlowsYarus
 from workflows.api.chuck_api_flows import ChuckApiFlows
 from workflows.web.chuck_web_flows import ChuckWebFlows
 from workflows.web.movie_time_flows import MovieFlows
@@ -123,7 +124,6 @@ def pytest_runtest_makereport(item, call):
 
 
 
-    
 @pytest.fixture(scope="class")
 def mobile_setup():
         dc = {}
@@ -135,6 +135,7 @@ def mobile_setup():
         driver.implicitly_wait(10)
         yield driver
         driver.quit()
+
 
 
 @pytest.fixture(scope="function")
