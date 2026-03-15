@@ -69,3 +69,14 @@ class APIActions:
             attachment_type=allure.attachment_type.JSON
         )
         assert response.ok, f"API request failed with status {response.status} - {response.text()}"
+
+
+    @staticmethod
+    @allure.step("Get occurrence count of '{text}' in page source")
+    def get_text_count_in_source(driver, text: str) -> int:
+        """
+        Retrieves the full page source and counts how many times 
+        a specific string appears.
+        """
+        source = driver.page_source
+        return source.count(text)

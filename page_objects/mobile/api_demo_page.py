@@ -1,10 +1,13 @@
-from appium.webdriver.common.appiumby import AppiumBy
+from appium.webdriver.common.mobileby import MobileBy
+from appium.webdriver.webdriver import WebDriver
+
+
+items = (MobileBy.ID,"text1")
+
 
 class MobileItemsPage:
-    def __init__(self, driver):
-        self.driver = driver # כאן זה driver ולא page
+    def __init__(self, driver:WebDriver):
+        self.driver = driver 
         
-    @property
-    def items_list(self):
-        # ב-Appium אנחנו מחפשים אלמנטים דרך ה-driver
-        return self.driver.find_elements(AppiumBy.ID, "text1")
+    def get_items_list(self):
+        return self.driver.find_elements(items[0],items[1])

@@ -4,9 +4,8 @@ from playwright.sync_api import Page, Playwright
 import os
 from dotenv import load_dotenv
 from appium import webdriver
-from appium.options.android import UiAutomator2Options
 from workflows.Mobile.mobile_flow import MobileFlows
-load_dotenv()
+
 from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from utils.common_ops import load_config
@@ -20,7 +19,7 @@ import sqlite3
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
-
+load_dotenv()
 
 
 # Load the configuration
@@ -122,57 +121,21 @@ def pytest_runtest_makereport(item, call):
                 except Exception as e:
                     print(f"Failed to stop/attach trace: {e}")
 
-# @pytest.fixture(scope="class")
-# def mobile_setup(request:FixtureRequest):
-#     dc = {}
-#     dc['udid'] = '8dad0f967d78'
-#     dc['appPackage'] = 'io.appium.android.apis'
-#     dc['appActivity'] = '.ApiDemos'
-#     dc['platformName'] = 'android'
-#     driver = webdriver.Remote('http://localhost:4723/wd/hub',dc)
-#     driver.implicitly_wait(10)
-#     yield driver
-#     driver.quit()
+
 
     
-
-
-# @pytest.fixture(scope="class")
-# def mobile_setup():
-#     # Desired Capabilities for the mobile device and application
-#     dc = {
-#         "udid": "8dad0f967d78",
-#         "appPackage": "io.appium.android.apis",
-#         "appActivity": ".ApiDemos",
-#         "platformName": "android",
-#         "automationName": "UiAutomator2"
-#     }
-    
-#     # Initialize Remote Webdriver. 
-#     # Note: Use 'http://localhost:4723' without '/wd/hub' for Appium 2.0+
-#     driver = webdriver.Remote('http://localhost:4723/wd/hub', dc)
-#     driver.implicitly_wait(10)
-    
-#     yield driver
-#     driver.quit()
-
 @pytest.fixture(scope="class")
 def mobile_setup():
-    # Set up UiAutomator2Options for the Android device
-    options = UiAutomator2Options()
-    options.udid = "8dad0f967d78"
-    options.app_package = "io.appium.android.apis"
-    options.app_activity = ".ApiDemos"
-    options.platform_name = "Android"
-    options.automation_name = "UiAutomator2"
+        dc = {}
+        dc['udid'] = '8dad0f967d78'
+        dc['appPackage'] = 'com.example.android.apis'
+        dc['appActivity'] = '.ApiDemos'
+        dc['platformName'] = 'android'
+        driver = webdriver.Remote('http://localhost:4724/wd/hub',dc)
+        driver.implicitly_wait(10)
+        yield driver
+        driver.quit()
 
-    # Initialize the Remote Webdriver
-    # Note: Appium 2.0+ usually uses 'http://localhost:4723' (no /wd/hub)
-    driver = webdriver.Remote('http://127.0.0.1:4723', options=options)
-    
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
 
 @pytest.fixture(scope="function")
 def mobile_flows(mobile_setup):
