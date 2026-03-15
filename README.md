@@ -1,4 +1,4 @@
-# Automation Testing Final Project: Web & API
+# Automation Testing Project: Web & API & MOBILE
 
 ## 📌 Project Overview
 This project is a comprehensive automated testing suite designed as a final graduation project. It demonstrates advanced automation capabilities by covering both **Frontend (Web UI)** and **Backend (REST API)** testing layers. The suite ensures system stability, data integrity, and a seamless user experience.
