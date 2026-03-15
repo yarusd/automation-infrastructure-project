@@ -5,12 +5,10 @@ import os
 from dotenv import load_dotenv
 from appium import webdriver
 from workflows.Mobile.mobile_flow import MobileFlows
-
 from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from utils.common_ops import load_config
 from utils.fixture_helpers import get_browser, attach_screenshot, attach_trace
-from workflows.Mobile.mobile_flows_yarus import MobileFlowsYarus
 from workflows.api.chuck_api_flows import ChuckApiFlows
 from workflows.web.chuck_web_flows import ChuckWebFlows
 from workflows.web.movie_time_flows import MovieFlows
@@ -44,16 +42,6 @@ def request_context(playwright: Playwright, request:FixtureRequest):
     request_context=playwright.request.new_context(base_url=CHUCK_BASE_URL)
     yield request_context
     request_context.dispose()
-
-# @pytest.fixture(scope= "class")
-# def mobile_driver(request:FixtureRequest):
-#     driver = None
-#     yield driver
-#     driver.close()
-
-# def mobile_flow(mobile_driver):
-#     return MobileFlows(mobile_driver)
-
 
 
 @pytest.fixture(scope = "class")
@@ -127,7 +115,7 @@ def pytest_runtest_makereport(item, call):
 @pytest.fixture(scope="class")
 def mobile_setup():
         dc = {}
-        dc['udid'] = '8dad0f967d78'
+        dc['udid'] = 'RF8N63P9Z9R'
         dc['appPackage'] = 'com.example.android.apis'
         dc['appActivity'] = '.ApiDemos'
         dc['platformName'] = 'android'

@@ -2,6 +2,8 @@ import allure
 from appium.webdriver.webdriver import WebDriver
 from appium.webdriver.webelement import WebElement
 from selenium.webdriver.common.by import By 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class MobileActions:
 
@@ -11,9 +13,24 @@ class MobileActions:
         element.click()
 
     @staticmethod
+    @allure.step("Click on element")
+    def wait_and_click(driver: WebDriver, locator):
+        element = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(locator)
+        )
+        element.click()
+
+    @staticmethod
     @allure.step("Get elements count")
     def get_elements_count(driver: WebDriver, locator_type: By, locator_value: str) -> int:
         return len(driver.find_elements(locator_type, locator_value))
+    
+    @staticmethod
+    @allure.step("Get new Elements count")
+    def get_elements_count_amount(driver: WebDriver, locator):
+        elements = driver.find_elements(*locator) 
+        return len(elements)
+
 
     @staticmethod
     @allure.step("Get element rect (geometry)")

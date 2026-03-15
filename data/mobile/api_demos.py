@@ -1,1 +1,1 @@
-expected_items_count = 12
+EXPECTED_CATEGORIES_COUNT = 11

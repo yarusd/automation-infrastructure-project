@@ -10,6 +10,17 @@ class MobileVerify:
         General comparison between two values (numbers or strings).
         """
         assert actual == expected, message or f"Expected '{expected}', but got '{actual}'"
+    
+    @staticmethod
+    @allure.step("Verify button was added. Initial count: {initial_count}, New count: {new_count}")
+    def verify_button_added(initial_count: int, new_count: int):
+        assert new_count == initial_count + 1, f"Expected {initial_count + 1} buttons, but found {new_count}"
+
+    
+    @staticmethod
+    @allure.step("Verify button was deleted. Initial count: {initial_count}, New count: {new_count}")
+    def verify_button_deleted(initial_count: int, new_count: int):
+        assert new_count == initial_count - 1, f"Expected {initial_count - 1} buttons, but found {new_count}"
 
     @staticmethod
     @allure.step("Verify element is displayed")
