@@ -11,21 +11,49 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Node.js (For Appium)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # מתאים יותר לגרסאות ישנות של אפיום
+
+      - name: Install Appium 1.x
+        # מתקין בדיוק את הגרסה הישנה שעובדת עם Appium-Python-Client 1.3.0
+        run: npm install -g appium@1.22.3
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install EXACT dependencies
         run: |
+          # כופה את הגרסאות המדויקות שביקשת כדי למנוע התנגשויות
+          pip install Appium-Python-Client==1.3.0
+          pip install selenium==3.141.0
+          pip install urllib3==1.26.18
           pip install -r requirements.txt
-          # Required: Install Playwright browsers in the GitHub runner
           playwright install --with-deps
 
-      - name: Run Pytest
+      - name: Run Appium Tests on Emulator
+        uses: reactivecircus/android-emulator-runner@v2
         env:
-          
           PYTHONPATH: .
           MY_API_KEY: ${{ secrets.MY_API_KEY }}  
-        
-        run: xvfb-run pytest -s -v
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          script: |
+            # 1. הפעלת שרת אפיום בדיוק על הפורט שלך (בגרסה 1 אין צורך ב-base-path)
+            appium --port 4724 &
+            
+            # המתנה קלה שהשרת יעלה
+            sleep 10
+            
+            # 2. טריק ה-CI: החלפה זמנית של ה-UDID רק עבור ההרצה הזו!
+            # הפקודה הזו מחפשת את ה-UDID שלך ב-conftest ומחליפה לזה של האמולטור
+            # הקובץ המקורי שלך ב-GitHub לא משתנה בכלל.
+            sed -i 's/RF8N63P9Z9R/emulator-5554/g' $(find . -name "conftest.py")
+            
+            # 3. הרצת הטסטים של ה-Mobile וה-Web
+            xvfb-run pytest -s -v
