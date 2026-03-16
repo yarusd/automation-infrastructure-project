@@ -53,8 +53,5 @@ jobs:
             # 3. התקנת האפליקציה על האמולטור הריק
             adb -s emulator-5554 install ApiDemos-debug.apk
             
-            # 4. הפתרון לשגיאת הפייתון - הגדרת תיקיית הפרויקט
-            export PYTHONPATH=$(pwd)
-            
-            # 5. הרצת הטסטים של ה-Mobile וה-Web
-            xvfb-run pytest -s -v
+            # 4. הרצת הטסטים יחד עם הגדרת נתיב הפרויקט באותה שורה!
+            PYTHONPATH=$(pwd) xvfb-run pytest -s -v
