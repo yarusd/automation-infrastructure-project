@@ -35,7 +35,7 @@ class TestMovieTimeHomepage:
     def test04_verify_theme_toggle_leads_to_light_mode_with_vision(self, movie_time_flows: MovieFlows,navigate_to_homepage):
         movie_time_flows.click_on_Theme_Toggle()
         is_light_mode = movie_time_flows.verify_theme_with_vision(expected_mode="light mode")
-        WebVerify.is_true(is_light_mode, "Error - AI detected that the site is NOT in light mode")
+        WebVerify.is_true(is_light_mode)
 
     
     @allure.title("Verify 'Already have an account' Navigation")

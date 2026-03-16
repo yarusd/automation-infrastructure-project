@@ -10,7 +10,7 @@ class TestMobileItems:
     @allure.description("This test ensures that exactly 11 items are displayed in the list")
     def test_01_verify_list_count(self, mobile_flows:MobileFlows): 
         actual_count = mobile_flows.get_items_count()
-        MobileVerify.values_equal(actual_count, EXPECTED_CATEGORIES_COUNT)
+        MobileVerify.values_are_equal(actual_count, EXPECTED_CATEGORIES_COUNT)
 
 
     @allure.title("Verify Device Orientation")

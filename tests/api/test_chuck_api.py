@@ -10,38 +10,51 @@ from utils.common_ops import get_db_categories
 
 class TestChuckAPI:
 
-    @allure.title("Verify Random Joke Retrieval via GET Request")
-    @allure.description("Verifies that the API successfully returns a random joke with a 200 OK status code")
-    def test01_Verify_random_joke_retrieval_via_GET_request(self,chuck_flows:ChuckApiFlows):
-        APIVerify.status_code(chuck_flows.search_for_joke(JOKE),EXPECTED_STATUS_SUCCESS_CODE)
 
-    @allure.title("Verify Joke Retrieval by Specific Category")
-    @allure.description("Ensures that fetching a joke from a specific category (e.g., 'career') returns a valid response and success status code.")
-    def test02_get_random_joke_by_category(self,chuck_flows:ChuckApiFlows):
-        APIVerify.status_code(chuck_flows.search_for_joke(CAREER),EXPECTED_STATUS_SUCCESS_CODE)  
-
-    @allure.title("Verify Retrieval of All Available Joke Categories")
-    @allure.description("Validates that the endpoint for retrieving the full list of joke categories is functional and returns the expected success code.")
-    def test03_get_list_of_categories(self, chuck_flows: ChuckApiFlows):    
-        APIVerify.status_code(chuck_flows.get_categories(), EXPECTED_STATUS_SUCCESS_CODE)
+    @allure.title("Verify Random Joke Matches Web Joke")
+    @allure.description("Verifies that a random joke from API matches the joke displayed on the web page.")
+    def test01_verify_equal_joke_from_web_and_api(self,chuck_flows:ChuckApiFlows, chuck_web_flows:ChuckWebFlows):
+        joke_data = chuck_flows.get_full_random_joke()
+        api_joke_value = joke_data[VALUE]
+        api_url = joke_data[URL]
+        chuck_web_flows.navigate_to_web(api_url)
+        web_joke_value = chuck_web_flows.get_web_joke_value()
+        WebVerify.strings_are_equal(api_joke_value, web_joke_value, "Values not match")
 
 
     @allure.title("Verify Data Integrity: API Categories vs Database Records")
     @allure.description("Validates that the joke categories retrieved from the API match the records stored in the system database.")
-    def test_04_verify_api_categories_against_db(self, chuck_flows:ChuckApiFlows, db_connection):
+    def test_02_verify_api_categories_against_db(self, chuck_flows:ChuckApiFlows, db_connection):
         api_list = chuck_flows.get_categories().json()
         db_list = get_db_categories(db_connection)
         APIVerify.list_equals(api_list, db_list, "API and DB categories Do Not Match")
 
+
+    @allure.title("Verify Random Joke Retrieval via GET Request")
+    @allure.description("Verifies that the API successfully returns a random joke with a 200 OK status code")
+    def test03_Verify_random_joke_retrieval_via_GET_request(self,chuck_flows:ChuckApiFlows):
+        APIVerify.status_code(chuck_flows.search_for_joke(JOKE),EXPECTED_STATUS_SUCCESS_CODE)
+
+    @allure.title("Verify Joke Retrieval by Specific Category")
+    @allure.description("Ensures that fetching a joke from a specific category (e.g., 'career') returns a valid response and success status code.")
+    def test04_get_random_joke_by_category(self,chuck_flows:ChuckApiFlows):
+        APIVerify.status_code(chuck_flows.search_for_joke(CAREER),EXPECTED_STATUS_SUCCESS_CODE)  
+
+    @allure.title("Verify Retrieval of All Available Joke Categories")
+    @allure.description("Validates that the endpoint for retrieving the full list of joke categories is functional and returns the expected success code.")
+    def test05_get_list_of_categories(self, chuck_flows: ChuckApiFlows):    
+        APIVerify.status_code(chuck_flows.get_categories(), EXPECTED_STATUS_SUCCESS_CODE)
+
+
     @allure.title("Verify Joke Search Returns 200")
     @allure.description("Sends a search request for a joke and verifies that the API returns a 200 status code.")
-    def test05_verify_joke_search(self,chuck_flows:ChuckApiFlows):
+    def test06_verify_joke_search(self,chuck_flows:ChuckApiFlows):
         APIVerify.status_code( chuck_flows.search_for_joke(SEARCH_VALUE),EXPECTED_STATUS_SUCCESS_CODE)
 
 
     @allure.title("Verify Joke id is Unique")
     @allure.description("Fetches two random jokes and verifies that their joke id are unique.")
-    def test06_verify_joke_id_is_uniqe(self, chuck_flows:ChuckApiFlows):
+    def test07_verify_joke_id_is_uniqe(self, chuck_flows:ChuckApiFlows):
         first_id = chuck_flows.get_joke_value(ID)
         second_id = chuck_flows.get_joke_value(ID)
         APIVerify.soft_assert_verify_not_equals(first_id, second_id)
@@ -49,7 +62,7 @@ class TestChuckAPI:
 
     @allure.title("Verify Joke value is Unique")
     @allure.description("Fetches two random jokes and verifies that value are unique.")    
-    def test07_verify_joke_value_is_uniqe(self, chuck_flows:ChuckApiFlows):
+    def test08_verify_joke_value_is_uniqe(self, chuck_flows:ChuckApiFlows):
         first_value = chuck_flows.get_joke_value(VALUE)
         second_value = chuck_flows.get_joke_value(VALUE)
         APIVerify.soft_assert_verify_not_equals(first_value, second_value)
@@ -57,20 +70,10 @@ class TestChuckAPI:
 
     @allure.title("Validate First Keyword Has More Jokes Than Second - API")
     @allure.description("Asserts that the first keyword total joke count is greater than the second keyword.")
-    def test_08_verify_who_has_more_jokes(self,chuck_flows:ChuckApiFlows):
+    def test_09_verify_who_has_more_jokes(self,chuck_flows:ChuckApiFlows):
         keyword_1_total = chuck_flows.get_joke_keyword_search_amount(SEARCH_KEYWORD_1)
         keyword_2_total = chuck_flows.get_joke_keyword_search_amount(SEARCH_KEYWORD_2)
         APIVerify.verify_greater_than(keyword_1_total,keyword_2_total)
-
-    @allure.title("Verify Random Joke Matches Web Joke")
-    @allure.description("Verifies that a random joke from API matches the joke displayed on the web page.")
-    def test09_verify_equal_joke_from_web_and_api(self,chuck_flows:ChuckApiFlows, chuck_web_flows:ChuckWebFlows):
-        joke_data = chuck_flows.get_full_random_joke()
-        api_joke_value = joke_data[VALUE]
-        api_url = joke_data[URL]
-        chuck_web_flows.navigate_to_web(api_url)
-        web_joke_value = chuck_web_flows.get_web_joke_value()
-        WebVerify.strings_are_equal(api_joke_value, web_joke_value, "Values not match")
 
   
     @allure.title("Verify Required Fields Are Not Null")
@@ -81,7 +84,7 @@ class TestChuckAPI:
 
     @allure.title("Send Multiple Random Jokes and Verify Status 200")
     @allure.description("Sends multiple random joke requests via API and verifies that each response returns status code 200 using soft assertions.")
-    def test10_Verify_sending_multiply_requests_status_ok(self,chuck_flows: ChuckApiFlows):
+    def test11_Verify_sending_multiply_requests_status_ok(self,chuck_flows: ChuckApiFlows):
         APIVerify.soft_verify_statuses(chuck_flows.send_multiple_jokes(GET_REQUEST_COUNT), EXPECTED_STATUS_SUCCESS_CODE)
         APIVerify.assert_all()        
 

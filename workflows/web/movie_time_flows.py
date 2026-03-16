@@ -180,7 +180,7 @@ class MovieFlows:
         screenshot_bytes = self.page.screenshot(type="png")
         prompt = (
             "Examine the screenshot. Is the main background color of the website white or very light? "
-            "Respond with 'Yes' or 'No' only."
+            "Respond with a simple answer yet not too short"
         )
         response = client.models.generate_content(
             model="gemini-2.5-flash",

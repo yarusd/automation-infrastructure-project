@@ -5,12 +5,10 @@ class MobileVerify:
 
     @staticmethod
     @allure.step("Verify values are equal")
-    def values_equal(actual, expected, message: str = None):
-        """
-        General comparison between two values (numbers or strings).
-        """
-        assert actual == expected, message or f"Expected '{expected}', but got '{actual}'"
-    
+    @allure.step("Verify Values are equal")
+    def values_are_equal(actual ,expected ,message=None):
+        assert float(actual) == float(expected),message or "Expected equal strings but both were different"
+
     @staticmethod
     @allure.step("Verify button was added. Initial count: {initial_count}, New count: {new_count}")
     def verify_button_added(initial_count: int, new_count: int):
@@ -66,7 +64,7 @@ class MobileVerify:
         print(f"\n📱 Device Orientation: {actual.capitalize()}")
         
         # Validate orientation is portrait
-        MobileVerify.values_equal(actual, "portrait", "Device should be in Portrait mode")
+        assert actual == "portrait",f"Device is in Landscape mode"
 
 
     @staticmethod

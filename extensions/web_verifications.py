@@ -30,6 +30,8 @@ class WebVerify:
     @staticmethod
     @allure.step("Verify String are equal")
     def strings_are_equal(actual:str,expected:str,message:str=None):
+        print(f"\n{actual}")
+        print(f"\n{expected}")
         assert actual.upper() == expected.upper(),message or "Expected same strings but both were different"
 
     @staticmethod
@@ -39,7 +41,7 @@ class WebVerify:
 
     @staticmethod
     @allure.step("Verify Values are equal")
-    def values_are_equal(actual,expected,message=None):
+    def values_are_equal(actual ,expected ,message=None):
         assert float(actual) == float(expected),message or "Expected equal strings but both were different"
 
     @staticmethod
@@ -47,7 +49,8 @@ class WebVerify:
     def values_are_not_equal(actual,expected,message=None):
         assert float(actual) != float(expected),message or "Expected different values but both were equal"
         
-
+    @staticmethod
+    @allure.step("Verify slider movement")
     def slider_navigation(element1:str, element2:str, element3:str):
       assert element1 != element2, "The movie didn't change after clicking NEXT arrow"
       assert element1 == element3, f"Clicking PREVIOUS arrow should have returned to {element1}"

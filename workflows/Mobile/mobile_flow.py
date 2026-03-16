@@ -15,6 +15,15 @@ class MobileFlows:
     def get_items_count(self) -> int:
         return len(self.items_page.get_items_list())
     
+    @allure.step("Click and count list")
+    def click_and_count_list(self, category_name: str) -> int:
+        self.items_page.click_category_by_text(category_name)
+  
+        return self.get_items_count()
+
+    @allure.step("Go back")
+    def go_back(self):
+        self.driver.back()
 
     @allure.step("Get ListView count from page source")
     def get_list_view_count_from_source(self) -> int:

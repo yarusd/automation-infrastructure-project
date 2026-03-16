@@ -59,6 +59,8 @@ class APIVerify:
             
     @staticmethod
     def list_equals(actual_list, expected_list, message):
+        print(f"\n{actual_list}")
+        print(f"\n{expected_list}")
         assert sorted(actual_list) == sorted(expected_list), f"{message} \nActual: {actual_list} \nExpected: {expected_list}"
    
     
@@ -79,15 +81,10 @@ class APIVerify:
 
     @staticmethod
     def soft_verify_statuses(responses: list, expected: int):
-        """
-        עובר על רשימת תגובות ומבצע Soft Assert לכל אחת.
-        מוציא את הלוגיקה והלופים מהטסט אל שכבת האימות.
-        """
+   
         for i, res in enumerate(responses, 1):
-            # בניית הודעה ברורה לכל בקשה ברשימה
             msg = f"Request #{i}: Expected status {expected}, but got {res.status}"
             
-            # קריאה ל-Soft Assert הפנימי - אפס פעולות לוגיות מחוץ למחלקה
             APIVerify.soft_assert(res.status == expected, msg)
 
 
