@@ -2,7 +2,8 @@ name: Scheduled Tests
 on:
   schedule:
     - cron: '0 0 * * *'
-  workflow_dispatch: 
+  workflow_dispatch:
+
 
 jobs:
   run-tests:
@@ -11,50 +12,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js (For Appium)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install Appium 1.x
-        run: npm install -g appium@1.22.3
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install EXACT dependencies
+
+      - name: Install dependencies
         run: |
-          pip install Appium-Python-Client==1.3.0
-          pip install selenium==3.141.0
-          pip install urllib3==1.26.18
           pip install -r requirements.txt
+          # Required: Install Playwright browsers in the GitHub runner
           playwright install --with-deps
 
-      - name: Run Appium Tests on Emulator
-        uses: reactivecircus/android-emulator-runner@v2
+
+      - name: Run Pytest
         env:
+         
+          PYTHONPATH: .
           MY_API_KEY: ${{ secrets.MY_API_KEY }}  
-        with:
-          api-level: 29
-          target: google_apis
-          arch: x86_64
-          script: |
-            # 1. שרת אפיום
-            appium --port 4724 &
-            sleep 10
-            
-            # 2. החלפת UDID
-            sed -i 's/RF8N63P9Z9R/emulator-5554/g' $(find . -name "conftest.py")
-            
-            # 3. התקנת האפליקציה
-            adb -s emulator-5554 install ApiDemos-debug.apk
-            
-            # 4. בדיקת האמת - מה גיטהאב באמת רואה?
-            echo "--- DEBUG: Project Structure ---"
-            ls -R
-            
-            # 5. הרצה בטוחה ב-100%
-            export PYTHONPATH=$PYTHONPATH:$(pwd)
-            python3 -m pytest -s -v
+       
+        run: xvfb-run pytest -s -v
