@@ -41,17 +41,20 @@ jobs:
           target: google_apis
           arch: x86_64
           script: |
-            # 1. הפעלת שרת אפיום בדיוק על הפורט שלך
+            # 1. שרת אפיום
             appium --port 4724 &
-            
-            # המתנה קלה שהשרת יעלה
             sleep 10
             
-            # 2. טריק ה-CI: החלפה זמנית של ה-UDID
+            # 2. החלפת UDID
             sed -i 's/RF8N63P9Z9R/emulator-5554/g' $(find . -name "conftest.py")
             
-            # 3. התקנת האפליקציה על האמולטור הריק
+            # 3. התקנת האפליקציה
             adb -s emulator-5554 install ApiDemos-debug.apk
             
-            # 4. הרצת הטסטים יחד עם הגדרת נתיב הפרויקט באותה שורה!
-            PYTHONPATH=$(pwd) xvfb-run pytest -s -v
+            # 4. בדיקת האמת - מה גיטהאב באמת רואה?
+            echo "--- DEBUG: Project Structure ---"
+            ls -R
+            
+            # 5. הרצה בטוחה ב-100%
+            export PYTHONPATH=$PYTHONPATH:$(pwd)
+            python3 -m pytest -s -v
