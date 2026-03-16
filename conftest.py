@@ -4,7 +4,7 @@ from playwright.sync_api import Page, Playwright
 import os
 from dotenv import load_dotenv
 from appium import webdriver
-from workflows.Mobile.mobile_flow import MobileFlows
+from workflows.mobile.mobile_flow import MobileFlows
 from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from utils.common_ops import load_config
@@ -15,9 +15,7 @@ from workflows.web.movie_time_flows import MovieFlows
 import time
 import uuid
 import sqlite3
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
+
 load_dotenv()
 
 

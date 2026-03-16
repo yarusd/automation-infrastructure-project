@@ -2,8 +2,8 @@ import allure
 import pytest
 from data.web.movie_time_data import *
 from extensions.mobile_verifications import MobileVerify
-from workflows.Mobile.mobile_flow import MobileFlows
 from utils.common_ops import read_data_from_csv
+from workflows.mobile.mobile_flow import MobileFlows
 
 CATEGORIES_DATA_PATH = r"data\mobile\mobile_categories_data.csv"
 

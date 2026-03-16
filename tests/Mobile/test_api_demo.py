@@ -1,7 +1,7 @@
 import allure
 from data.mobile.api_demos import *
 from extensions.mobile_verifications import MobileVerify
-from workflows.Mobile.mobile_flow import MobileFlows
+from workflows.mobile.mobile_flow import MobileFlows
 
 
 class TestMobileItems:

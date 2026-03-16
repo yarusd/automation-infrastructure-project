@@ -14,6 +14,7 @@ class MobileItemsPage:
     DEFAULT_ANIM = (By.XPATH, "//*[@text='Default Layout Animations']")
     LIST_VIEW = (By.CLASS_NAME, "android.widget.ListView")
 
+
     def get_items_list(self,items):
         items_locator = (items)
         WebDriverWait(self.driver, 10).until(
