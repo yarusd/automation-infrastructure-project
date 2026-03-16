@@ -9,20 +9,21 @@ class MobileItemsPage:
     def __init__(self, driver: WebDriver): 
         self.driver = driver 
 
+    ITEMS = (By.XPATH, "//*[@id='text1']")
     CATEGORIES = (By.XPATH, "//*[@id='text1']")
     ANIMATION_CAT = (By.XPATH, "//*[@text='Animation']")
     DEFAULT_ANIM = (By.XPATH, "//*[@text='Default Layout Animations']")
     LIST_VIEW = (By.CLASS_NAME, "android.widget.ListView")
 
-    def get_items_list(self):
-        items_locator = (MobileBy.XPATH, "//*[@id='text1']")
+    def get_items_list(self,items):
+        items_locator = (items)
         WebDriverWait(self.driver, 10).until(
         EC.visibility_of_any_elements_located(items_locator)
         )
         return self.driver.find_elements(*items_locator)
 
     def click_category_by_text(self, name):
-        dynamic_xpath = (MobileBy.XPATH, f"//*[@text='{name}']")
+        dynamic_xpath = (By.XPATH, f"//*[@text='{name}']")
         self.driver.find_element(*dynamic_xpath).click()
         
     def get_categories_count(self) -> int:
