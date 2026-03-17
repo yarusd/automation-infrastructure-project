@@ -16,6 +16,7 @@ class ChuckApiFlows:
     
     def get_categories(self) -> APIResponse:
         return self.api.get("categories")
+    
     @allure.step("Get a random joke")
     def get_a_joke(self)->APIResponse:
         return self.api.get(RANDOM_RESOURCE)
