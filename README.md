@@ -2,7 +2,7 @@
 
 Welcome to the official repository of **YT Automation Labs**. This project showcases a robust, industrial-grade automation infrastructure designed to validate a complex ecosystem across **Web, API, and Mobile** platforms.
 
-Developed by **Yarus & Tzedek**, this suite demonstrates the power of scalable test architecture, Data-Driven Testing (DDT), and modern CI/CD integration.
+This suite demonstrates the power of scalable test architecture, Data-Driven Testing (DDT), and modern CI/CD integration.
 
 ---
 
@@ -64,8 +64,7 @@ pip install -r requirements.txt
 pytest --alluredir=reports
 
 
-YT Automation Labs is a collaborative effort led by: Yarus and Tzedek
-
+Enjoy.
 
 
 
