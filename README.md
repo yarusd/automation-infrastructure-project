@@ -14,7 +14,7 @@ This project is a comprehensive automated testing suite designed as a final grad
 
 ## 🧪 Test Coverage
 
-### 1. Web UI Automation (10 Test Cases)
+### 1. Web UI Automation - https://yarusd.github.io/movie-theater/
 The Web suite focuses on end-to-end user scenarios, UI components, and cross-browser functionality:
 * **User Authentication:** Login with valid credentials and session verification.
 * **Failed Login:** Error message validation for incorrect password/email.
@@ -27,7 +27,7 @@ The Web suite focuses on end-to-end user scenarios, UI components, and cross-bro
 * **Form Validation:** Testing mandatory fields and input constraints.
 * **Logout Flow:** Ensuring secure session termination.
 
-### 2. API Testing (10 Test Cases)
+### 2. API Testing - https://api.chucknorris.io/#!
 The API suite validates the business logic, status codes, and JSON schema integrity:
 * **Get Random Joke: Validates the successful retrieval of a random joke with a 200 OK status code.
 * **Get Joke by Category: Ensures that fetching a joke from a specific category returns a valid and relevant response.
