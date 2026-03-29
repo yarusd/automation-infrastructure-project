@@ -26,34 +26,49 @@ class APIActions:
         """
         Send a POST request to the specified URL with a JSON payload and optional headers.
         """
-        response = self.request_context.post(url,
-                                             data=json.dumps(payload),
-                                             headers=headers or {"Content-Type": "application/json"}
-                                             )
-        self._log_response(response)  # Log the response
+        final_headers = {"Content-Type": "application/json"}
+        
+        if headers:
+            final_headers.update(headers)
+
+        response = self.request_context.post(
+            url,
+            data=json.dumps(payload),
+            headers=final_headers
+        )
+        self._log_response(response)
         return response
 
-
     @allure.step("Send PUT request to {url}")
-    def put(self, url: str, payload: dict, headers: Optional[dict] = None):
-        """
-        Send a PUT request to the specified URL with a JSON payload and optional headers.
-        """
-        response = self.request_context.put(url,
-                                            data=json.dumps(payload),
-                                            headers=headers or {"Content-Type": "application/json"}
-                                            )
-        self._log_response(response)  # Log the response
+    def put(self, url: str, payload: dict, headers: dict = None):
+        request_headers = {"Content-Type": "application/json"}
+        
+        if headers:
+            request_headers.update(headers)
+
+        response = self.request_context.put(
+            url,
+            data=payload,
+            headers=request_headers
+        )
+        self._log_response(response)
         return response
     
 
     @allure.step("Send DELETE request to {url}")
     def delete(self, url: str, headers: Optional[dict] = None):
         """
-        Send a DELETE request to the specified URL with optional headers.
+        Send a DELETE request. Merges default headers with provided headers.
         """
-        response = self.request_context.delete(url, headers=headers)
-        self._log_response(response)  # Log the response
+        request_headers = {"Content-Type": "application/json"}
+        if headers:
+            request_headers.update(headers)
+            
+        response = self.request_context.delete(
+            url,
+            headers=request_headers
+        )
+        self._log_response(response)
         return response
     
     

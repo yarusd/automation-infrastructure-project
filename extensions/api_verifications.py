@@ -58,29 +58,59 @@ class APIVerify:
 
 
     @staticmethod
-    def verify_required_fields_not_empty(movies_list: list, required_fields: list):
+    def verify_required_fields_not_empty(input_data, required_fields: list):
+        """
+        הגרסה שבאמת מקבלת הכל: 
+        גם אובייקט Response וגם רשימה (list) או דיקשנרי (dict) שכבר חולצו.
+        """
+        # 1. חילוץ הנתונים בצורה חכמה:
+        # אם זה Response - נחלץ את ה-JSON. אם זה כבר דאטה - נשתמש בו כמו שהוא.
+        if hasattr(input_data, 'json'):
+            data = input_data.json()
+        else:
+            data = input_data
+
         report_errors = ""
-                
-        for index, movie in enumerate(movies_list):
-                m_id = movie.get('id', f"Index {index}")
-                    
-                for field in required_fields:
-                        value = movie.get(field)
-                        if value is None or str(value).strip() == "":
-                            report_errors += f"\n- Movie {m_id}: Missing {field}"
 
-        assert report_errors == "", f"Found missing data in API response: {report_errors}"
+        # 2. הבטחה שזה תמיד יהיה רשימה (גם אם זה סרט בודד מה-POST)
+        movies_to_check = data if isinstance(data, list) else [data]
 
-            
+        for index, movie in enumerate(movies_to_check):
+            m_id = movie.get('id', f"Index {index}")
+            for field in required_fields:
+                value = movie.get(field)
+                if value is None or str(value).strip() == "":
+                    report_errors += f"\n- Movie {m_id}: Missing or Empty {field}"
+
+        assert report_errors == "", f"Found data integrity issues: {report_errors}"
+
     @staticmethod
     def list_equals(actual_list, expected_list, message):
             
-            clean_actual = sorted([str(movie).strip().lower() for movie in actual_list])
-            clean_expected = sorted([str(movie).strip().lower() for movie in expected_list])
+        actual_set = {str(x).strip().lower() for x in actual_list}
+        expected_set = {str(x).strip().lower() for x in expected_list}
 
-            assert clean_actual == clean_expected, f"{message} - Lists are still not identical after cleaning."
+        if actual_set != expected_set:
+            diff = f"{message}\nOnly Actual: {actual_set - expected_set}\nOnly Expected: {expected_set - actual_set}"
+            print(diff)
+            assert actual_set == expected_set, diff
    
-    
+    @staticmethod
+    def verify_all_movies_match_criteria(movie_list: list, criteria: dict):
+        """
+        עובר על כל הסרטים ומוודא שהם תואמים למאפיינים שביקשנו.
+        """
+        for movie in movie_list:
+            for key, expected_value in criteria.items():
+                # שליפת הערך מהסרט (מחזיר None אם המפתח חסר)
+                actual_value = movie.get(key)
+                condition = str(actual_value).lower() == str(expected_value).lower()
+                
+                if not condition:
+                    error_msg = f"Movie ID {movie.get('id')}: Expected {key}='{expected_value}', but got '{actual_value}'"
+                    APIVerify.soft_assert(False, error_msg)   
+
+
     @staticmethod
     def json_contains(response_data, expected_data: dict):
         """
@@ -111,20 +141,7 @@ class APIVerify:
                 APIVerify.soft_assert(actual == expected, msg)
 
 
-    @staticmethod
-    def verify_all_movies_match_criteria(movie_list: list, criteria: dict):
-        """
-        עובר על כל הסרטים ומוודא שהם תואמים למאפיינים שביקשנו.
-        """
-        for movie in movie_list:
-            for key, expected_value in criteria.items():
-                # שליפת הערך מהסרט (מחזיר None אם המפתח חסר)
-                actual_value = movie.get(key)
-                condition = str(actual_value).lower() == str(expected_value).lower()
-                
-                if not condition:
-                    error_msg = f"Movie ID {movie.get('id')}: Expected {key}='{expected_value}', but got '{actual_value}'"
-                    APIVerify.soft_assert(False, error_msg)
+  
 
 
     @staticmethod

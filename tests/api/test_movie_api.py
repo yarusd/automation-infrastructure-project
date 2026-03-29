@@ -1,4 +1,5 @@
 import allure
+import pytest
 from data.api.movie_api_data import *
 from extensions.api_verifications import APIVerify
 from workflows.api.movie_api_flows import MovieApiFlows
@@ -19,7 +20,7 @@ class TestMovieAPI:
     @allure.title("Verify Total Movies Count")
     @allure.description("Validates that the number of movies returned by the API matches the expected count.")
     def test02_verify_movies_list_count(self, movie_flows:MovieApiFlows):
-        actual_movies_count = movie_flows.get_list_count()
+        actual_movies_count = movie_flows.get_movies_count()
         APIVerify.verify_values_equals(actual_movies_count,EXPECTED_MOVIES_COUNT)
         
 
@@ -57,25 +58,51 @@ class TestMovieAPI:
     @allure.description("Validates the list of movie titles in Backend API matches the Web UI.")
     @allure.severity(allure.severity_level.CRITICAL)
     def test07_verify_equal_movies_from_web_and_api(self,movie_flows: MovieApiFlows, movie_time_flows:MovieFlows):
-        
-        api_movies_list = movie_flows.get_movies_value("title")
+        api_movies_list = movie_flows.get_movies_value(TITLE_KEY)
 
         movie_time_flows.navigate_to_all_movies()
         web_movies_titles = movie_time_flows.get_title_list_text()
         APIVerify.list_equals(api_movies_list, web_movies_titles, "Values not match")
 
 
-    @allure.title("Verify db resets with API Key")
-    @allure.description("Validates that the API strictly resets database with API Key.")
-    def test08_reset_orders_db_success(self, movie_flows:MovieApiFlows):
-        response = movie_flows.delete_request(DELETE_DATABASE, USE_API_KEY)
-        APIVerify.status_code(response, EXPECTED_STATUS_SUCCESS_CODE)
+    @allure.title("System Integrity: Full Database Reset Verification")
+    @allure.description("Validates that the reset endpoint not only returns 200 ok and restores the database initial state of 60 movies.")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test08_reset_api_db_and_verify_count(self, setup_clean_database,movie_flows: MovieApiFlows):
+        reset_response = setup_clean_database
+        APIVerify.status_code(reset_response, EXPECTED_STATUS_SUCCESS_CODE)
+
+        actual_count = movie_flows.get_movies_count()
+        APIVerify.verify_values_equals(actual_count, EXPECTED_MOVIES_COUNT)
 
 
     @allure.title("Security Check: Block Database Reset Without API Key")
     @allure.description("Validates that the API strictly prevents database resets without API Key.")
-    def test09_reset_orders_db_unauthorized(self, movie_flows: MovieApiFlows):
+    @allure.severity(allure.severity_level.CRITICAL)    
+    def test09_reset_api_db_unauthorized(self, movie_flows: MovieApiFlows):
         response = movie_flows.delete_request(DELETE_DATABASE)
         APIVerify.status_code(response, EXPECTED_UNAUTORIZED_STATUS_CODE)
 
+    @allure.title("Update Movie Existing Information")
+    @allure.description("Verifies that an existing movie can be updated using a valid API Key") 
+    @allure.severity(allure.severity_level.CRITICAL)    
+    def test10__update_movie_with_authorizations(self, movie_flows: MovieApiFlows):
+        movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, PUT_MOVIE_DATA, USE_API_KEY)
+        APIVerify.json_contains(movie_update.json(),PUT_MOVIE_SUCCESS_MSG)
+
+
+    @allure.title("Update Movie Without Authorization")
+    @allure.description("Security check to ensure the server rejects update requests when an API Key is missing.")
+    def test11_update_movie_without_authorizations(self, movie_flows: MovieApiFlows):
+        movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, PUT_MOVIE_DATA)
+        APIVerify.status_code(movie_update, EXPECTED_UNAUTORIZED_STATUS_CODE)
+
+
+    @allure.title("Book Tickets Scenarios : {status_txt}")
+    @allure.description("DDT: Verifying ticket booking with various data sets (Valid and Invalid).")
+    @pytest.mark.parametrize("payload, expected_status,expected_msg,status_txt", BOOKING_SCENARIOS)
+    def test12_book_tickets_validation_scenarios(self, movie_flows: MovieApiFlows,payload, expected_status,expected_msg,status_txt):
+        order_request = movie_flows.send_post_request(ORDERS_URL,payload)
+        APIVerify.status_code(order_request,expected_status)
+        APIVerify.json_contains(order_request.json(), expected_msg)
 

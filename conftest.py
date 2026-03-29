@@ -1,4 +1,5 @@
 import os
+import allure
 import pytest
 import time
 import uuid
@@ -80,31 +81,40 @@ def navigate_to_homepage(movie_time_flows:MovieFlows):
     movie_time_flows.navigate_to_homepage()
 
 
-# @pytest.fixture(scope= "class")
-# def request_context(playwright: Playwright, request:FixtureRequest):
-#     request_context=playwright.request.new_context(base_url=CHUCK_BASE_URL)
-#     yield request_context
-#     request_context.dispose()
+@pytest.fixture(scope="class")
+def chuck_context(playwright: Playwright):
+    context = playwright.request.new_context(base_url=CHUCK_BASE_URL)
+    yield context
+    context.dispose()
 
-@pytest.fixture(scope= "class")
-def request_context(playwright: Playwright, request:FixtureRequest):
-    request_context=playwright.request.new_context(base_url=MOVIE_API_URL)
-    yield request_context
-    request_context.dispose()
+@pytest.fixture(scope="class")
+def movie_context(playwright: Playwright):
+    context = playwright.request.new_context(base_url=MOVIE_API_URL)
+    yield context
+    context.dispose()
 
 @pytest.fixture
-def movie_flows(request_context):
-    return MovieApiFlows(request_context)
+def movie_flows(movie_context):
+    return MovieApiFlows(movie_context)
+
+@pytest.fixture(autouse=True)
+def setup_clean_database(movie_flows: MovieApiFlows, request):
+    response = None 
+        
+    if "test_movie_api" in request.node.nodeid:
+            with allure.step("Setup: Resetting database before test"):
+                response = movie_flows.delete_request(DELETE_DATABASE, use_api_key=True)
+                
+    yield response
 
 
+@pytest.fixture
+def chuck_flows(chuck_context):
+    return ChuckApiFlows(chuck_context)
 
-# @pytest.fixture
-# def chuck_flows(request_context):
-#     return ChuckApiFlows(request_context)
-
-# @pytest.fixture
-# def chuck_web_flows(page):
-#     return ChuckWebFlows(page)
+@pytest.fixture
+def chuck_web_flows(page):
+    return ChuckWebFlows(page)
 
 @pytest.fixture(scope="class")
 def mobile_setup():
