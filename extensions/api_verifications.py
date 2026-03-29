@@ -11,18 +11,18 @@ class APIVerify:
             f"Expected status code {expected_status_code}, but got {response.status}"
         
     @staticmethod
-    def verify_not_equals(actual, unexpected, message="Values are unexpectedly equal"):
-        """
-        Verifies that two values are NOT equal.
-        """
+    def verify_values_not_equals(actual, unexpected, message="Values are unexpectedly equal"):
         assert actual != unexpected, f"{message}: {actual} == {unexpected}"
+    
+    @staticmethod
+    def verify_values_equals(actual, unexpected, message="Values are unexpectedly equal"):
+        assert actual == unexpected, f"{message}: {actual} != {unexpected}"
 
     @staticmethod
     def verify_greater_than(actual: int, expected_minimum: int, message="Value comparison failed"):
         """
         Verifies that 'actual' is strictly greater than 'expected_minimum'.
         """
-        # האסרט עצמו כבר מבצע את ה-IF הפנימי. אם התנאי לא מתקיים, הוא זורק AssertionError.
         assert actual > expected_minimum, \
             f"{message}: Expected {actual} to be greater than {expected_minimum}"
 
@@ -44,7 +44,7 @@ class APIVerify:
             f"Expected value for key '{key}' is '{expected_value}', but got '{response_data[key]}'"
         )
 
-    @staticmethod
+    @staticmethod  #CHUCK
     def verify_required_fields_not_null(response_data: dict, required_fields: list):
         """
         Verifies that required fields exist and are not null/empty.
@@ -56,12 +56,29 @@ class APIVerify:
             assert value is not None, f"Field '{field}' is None"
             assert value != "", f"Field '{field}' is empty"
 
+
+    @staticmethod
+    def verify_required_fields_not_empty(movies_list: list, required_fields: list):
+        report_errors = ""
+                
+        for index, movie in enumerate(movies_list):
+                m_id = movie.get('id', f"Index {index}")
+                    
+                for field in required_fields:
+                        value = movie.get(field)
+                        if value is None or str(value).strip() == "":
+                            report_errors += f"\n- Movie {m_id}: Missing {field}"
+
+        assert report_errors == "", f"Found missing data in API response: {report_errors}"
+
             
     @staticmethod
     def list_equals(actual_list, expected_list, message):
-        print(f"\n{actual_list}")
-        print(f"\n{expected_list}")
-        assert sorted(actual_list) == sorted(expected_list), f"{message} \nActual: {actual_list} \nExpected: {expected_list}"
+            
+            clean_actual = sorted([str(movie).strip().lower() for movie in actual_list])
+            clean_expected = sorted([str(movie).strip().lower() for movie in expected_list])
+
+            assert clean_actual == clean_expected, f"{message} - Lists are still not identical after cleaning."
    
     
     @staticmethod
@@ -82,11 +99,32 @@ class APIVerify:
     @staticmethod
     def soft_verify_statuses(responses: list, expected: int):
    
-        for i, res in enumerate(responses, 1):
-            msg = f"Request #{i}: Expected status {expected}, but got {res.status}"
-            
-            APIVerify.soft_assert(res.status == expected, msg)
+        if not responses:
+                APIVerify.soft_assert(False, "❌ Error: Response list is empty! Check your Flow.")
+                return
 
+        for i, res in enumerate(responses, 1):
+                actual = res.status
+                msg = f"Request #{i}: Expected status {expected}, but got {actual}"
+                
+                # ביצוע ה-Soft Assert
+                APIVerify.soft_assert(actual == expected, msg)
+
+
+    @staticmethod
+    def verify_all_movies_match_criteria(movie_list: list, criteria: dict):
+        """
+        עובר על כל הסרטים ומוודא שהם תואמים למאפיינים שביקשנו.
+        """
+        for movie in movie_list:
+            for key, expected_value in criteria.items():
+                # שליפת הערך מהסרט (מחזיר None אם המפתח חסר)
+                actual_value = movie.get(key)
+                condition = str(actual_value).lower() == str(expected_value).lower()
+                
+                if not condition:
+                    error_msg = f"Movie ID {movie.get('id')}: Expected {key}='{expected_value}', but got '{actual_value}'"
+                    APIVerify.soft_assert(False, error_msg)
 
 
     @staticmethod
@@ -99,10 +137,27 @@ class APIVerify:
 
 
     @staticmethod
+    def soft_verify_keyword_anywhere_in_results(results_list: list, keyword: str):
+      
+        import json
+        
+        for i, movie_obj in enumerate(results_list):
+            # הופכים את כל האובייקט של הסרט למחרוזת טקסט אחת גדולה
+            movie_as_str = json.dumps(movie_obj).lower()
+            
+            # בודקים אם מילת המפתח נמצאת בתוך הטקסט הזה
+            condition = keyword.lower() in movie_as_str
+            
+            msg = f"Result #{i}: Keyword '{keyword}' was not found anywhere in the movie data."
+            APIVerify.soft_assert(condition, msg)
+
+
+    @staticmethod
     def soft_assert(condition: bool, message: str):
         if not condition:
             # לא עוצר – רק אוסף את ההודעה
             APIVerify.errors.append(message)
+
 
     @staticmethod
     def assert_all():

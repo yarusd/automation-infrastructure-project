@@ -45,7 +45,6 @@ class MovieFlows:
     def get_movie_description(self) -> str:
         return UIActions.get_text(self.movie_page.movie_description)
     
-
     @allure.step("Sign in")
     def sign_in(self,user_name:str,password:str)->None:
         UIActions.click(self.home.log_in_icon)
@@ -62,7 +61,6 @@ class MovieFlows:
         UIActions.update_text(self.register.confirm_password_field, confirm_pass)
         UIActions.click(self.register.creat_account_button)
     
-
     
     @allure.step("Click on login here from register page")
     def go_to_login_page_from_register(self) -> None:

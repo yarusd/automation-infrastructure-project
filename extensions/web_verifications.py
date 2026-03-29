@@ -60,10 +60,12 @@ class WebVerify:
     @staticmethod
     @allure.step("Verify no duplicate items in list")
     def no_duplicates(elements:list):
-        unique_titles = set(elements)
-        if len(elements) != len(elements):
-            duplicates = [title for title in unique_titles if elements.count(title) > 1]
-            raise AssertionError(f"Found duplicate movies: {duplicates}")
+            unique_elements = set(elements)
+            # בודקים אם אורך הרשימה המקורית שונה מאורך קבוצת הייחודיים
+            if len(elements) != len(unique_elements):
+                # כאן מוצאים את הכפולים בשביל הודעת השגיאה
+                duplicates = list(set([x for x in elements if elements.count(x) > 1]))
+                raise AssertionError(f"Found duplicate items: {duplicates}")
 
 
     @staticmethod

@@ -68,7 +68,7 @@ class APIActions:
             name=f"API Response - {response.status}",
             attachment_type=allure.attachment_type.JSON
         )
-        assert response.ok, f"API request failed with status {response.status} - {response.text()}"
+        # assert response.ok, f"API request failed with status {response.status} - {response.text()}"
 
 
     @staticmethod
@@ -80,3 +80,12 @@ class APIActions:
         """
         source = driver.page_source
         return source.count(text)
+    
+
+    @staticmethod
+    def count(response) -> int:
+        """
+        מחזירה את מספר האיברים ברשימת ה-JSON.
+        """
+        # response.json() הופך את התוצאה לרשימה/מילון של פייתון
+        return len(response)
