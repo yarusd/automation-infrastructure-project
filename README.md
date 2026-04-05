@@ -30,7 +30,8 @@ Powered by **Playwright**, the web suite focuses on high-performance user scenar
 * **Navigation Integrity:** Validating URL redirects and button functionality across the platform.
 
 ### ⚙️ API & Backend Integrity
-**Target API:** [Chuck Norris API](https://api.chucknorris.io/#! ) & **Internal MovieTime API** Robust validation of data integrity and server-side logic:
+**Target API:** [Chuck Norris API](https://api.chucknorris.io/#! ) & **Internal MovieTime API** (https://movie-time-api.onrender.com/) 
+Robust validation of data integrity and server-side logic:
 * **DDT (Data-Driven Testing):** Extensive data validation using **SQLite** to compare DB records vs. API responses.
 * **JSON Schema Enforcement:** Guaranteeing unique IDs and mandatory field constraints (Not Null).
 * **Search & Filter Logic:** Verifying precise retrieval of resources based on category and text queries.
