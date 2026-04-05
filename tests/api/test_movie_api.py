@@ -1,10 +1,10 @@
 import allure
 import pytest
+from data.api.api_ddt.api_ddt_data import *
 from data.api.movie_api_data import *
 from extensions.api_verifications import APIVerify
 from workflows.api.movie_api_flows import MovieApiFlows
 from workflows.web.movie_time_flows import MovieFlows
-
 
 
 
@@ -62,6 +62,7 @@ class TestMovieAPI:
 
         movie_time_flows.navigate_to_all_movies()
         web_movies_titles = movie_time_flows.get_title_list_text()
+   
         APIVerify.list_equals(api_movies_list, web_movies_titles, "Values not match")
 
 
@@ -88,21 +89,31 @@ class TestMovieAPI:
     @allure.severity(allure.severity_level.CRITICAL)    
     def test10__update_movie_with_authorizations(self, movie_flows: MovieApiFlows):
         movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, PUT_MOVIE_DATA, USE_API_KEY)
+        print(movie_update.json())
         APIVerify.json_contains(movie_update.json(),PUT_MOVIE_SUCCESS_MSG)
 
 
     @allure.title("Update Movie Without Authorization")
     @allure.description("Security check to ensure the server rejects update requests when an API Key is missing.")
+    @allure.severity(allure.severity_level.CRITICAL)    
     def test11_update_movie_without_authorizations(self, movie_flows: MovieApiFlows):
         movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, PUT_MOVIE_DATA)
         APIVerify.status_code(movie_update, EXPECTED_UNAUTORIZED_STATUS_CODE)
-
 
     @allure.title("Book Tickets Scenarios : {status_txt}")
     @allure.description("DDT: Verifying ticket booking with various data sets (Valid and Invalid).")
     @pytest.mark.parametrize("payload, expected_status,expected_msg,status_txt", BOOKING_SCENARIOS)
     def test12_book_tickets_validation_scenarios(self, movie_flows: MovieApiFlows,payload, expected_status,expected_msg,status_txt):
         order_request = movie_flows.send_post_request(ORDERS_URL,payload)
+        APIVerify.status_code(order_request,expected_status)
+        APIVerify.json_contains(order_request.json(), expected_msg)
+
+
+    @allure.title("Payment Validation: {test_num}")
+    @allure.description("Data-Driven Test: Validating direct payment flows with positive and negative scenarios.")
+    @pytest.mark.parametrize("payload, expected_status, expected_msg,test_num", DIRECT_PAYMENT_SCENARIOS)
+    def test13_direct_payment_validations(self, movie_flows: MovieApiFlows,payload, expected_status, expected_msg, test_num):
+        order_request = movie_flows.send_post_request(DIRECT_CHECKOUT_URL,payload)
         APIVerify.status_code(order_request,expected_status)
         APIVerify.json_contains(order_request.json(), expected_msg)
 

@@ -11,6 +11,7 @@ EXPECTED_NOT_FOUND_STATUS = 404
 TITLE_KEY = "title"
 MOVIES_URL = "movies"
 ORDERS_URL = "orders"
+DIRECT_CHECKOUT_URL= "payments/checkout"
 RANDOM_KEYWORD = "superman"
 DICT_KEYWORD ={"genre" : "action"}
 GET_REQUEST_AMOUNT = 20
@@ -23,7 +24,6 @@ PUT_MOVIE_ID = 1
 PUT_MOVIE_DATA = { "title": "Bolts"}
 
 BOOKING_SCENARIOS = [
-    # --- Positive Tests ---
     ({"userId": 1, "movieId": 25, "quantity": 1}, 201, {"status": "confirmed"}, "Valid: Min Boundary (1)"),
     ({"userId": 1, "movieId": 25, "quantity": 8}, 201, {"status": "confirmed"}, "Valid: Max Boundary (8)"),
     ({"userId": 1, "movieId": 25, "quantity": 4}, 201, {"status": "confirmed"}, "Valid: Middle Range (4)"),
