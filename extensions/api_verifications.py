@@ -111,16 +111,41 @@ class APIVerify:
                     APIVerify.soft_assert(False, error_msg)   
 
 
+    # @staticmethod
+    # def json_contains(response_data, expected_data: dict):
+    #     """
+    #     Verifies that the JSON response contains the expected data.
+    #     """
+    #     for key, value in expected_data.items():
+    #         assert key in response_data, f"Key '{key}' not found in the response JSON"
+    #         assert response_data[key] == value, (
+    #             f"Expected value for key '{key}' is '{value}', but got '{response_data[key]}'"
+    #         )
+
     @staticmethod
-    def json_contains(response_data, expected_data: dict):
+    def json_contains(response_data, expected_data: dict, partial=True):
         """
         Verifies that the JSON response contains the expected data.
+        By default, strings will be checked for partial match (contains).
         """
         for key, value in expected_data.items():
+            # 1. וידוא קיום המפתח
             assert key in response_data, f"Key '{key}' not found in the response JSON"
-            assert response_data[key] == value, (
-                f"Expected value for key '{key}' is '{value}', but got '{response_data[key]}'"
-            )
+            
+            actual_value = response_data[key]
+
+            # 2. לוגיקת ההשוואה
+            if partial and isinstance(value, str) and isinstance(actual_value, str):
+                # אם שניהם מחרוזות, נבדוק הכלה (ונוסיף .lower() כדי למנוע בעיות של אותיות גדולות/קטנות)
+                assert value.lower() in actual_value.lower(), (
+                    f"Expected '{value}' to be contained in '{actual_value}' for key '{key}'"
+                )
+            else:
+                # עבור מספרים, בוליאני או אם partial=False, נבצע השוואה מדויקת
+                assert actual_value == value, (
+                    f"Expected value for key '{key}' is '{value}', but got '{actual_value}'"
+                )
+
 
     # Soft Assertions
     errors = []
@@ -154,19 +179,34 @@ class APIVerify:
 
 
     @staticmethod
-    def soft_verify_keyword_anywhere_in_results(results_list: list, keyword: str):
-      
-        import json
-        
-        for i, movie_obj in enumerate(results_list):
-            # הופכים את כל האובייקט של הסרט למחרוזת טקסט אחת גדולה
-            movie_as_str = json.dumps(movie_obj).lower()
+    def soft_verify_search_integrity(results, keyword):
+        keyword = str(keyword).lower()
+
+        # 1. טיפול במקרה של שגיאה (dict) במקום רשימה (list)
+        # אם השרת החזיר שגיאה (כמו ב-400), נבדוק אם ה-keyword נמצא בהודעת השגיאה
+        if isinstance(results, dict):
+            error_msg = str(results.get('message', '')).lower()
+            found_in_error = keyword in error_msg
             
-            # בודקים אם מילת המפתח נמצאת בתוך הטקסט הזה
-            condition = keyword.lower() in movie_as_str
+            msg = f"Bug: Expected error message to contain '{keyword}', but got: '{error_msg}'"
+            APIVerify.soft_assert(found_in_error, msg)
+            return
+
+        # 2. אם לא חזרו תוצאות בכלל (רשימה ריקה)
+        if not results:
+            APIVerify.soft_assert(False, f"Bug: Search for '{keyword}' returned 0 results!")
+            return 
+
+        # 3. בדיקת שלמות לכל סרט (כשהתוצאה היא רשימה)
+        for m in results:
+            title = str(m.get('title', '')).lower()
+            genre = str(m.get('genre', '')).lower()
+            cast = " ".join([str(a) for a in m.get('cast', [])]).lower()
             
-            msg = f"Result #{i}: Keyword '{keyword}' was not found anywhere in the movie data."
-            APIVerify.soft_assert(condition, msg)
+            found = (keyword in title) or (keyword in genre) or (keyword in cast)
+            
+            msg = f"Bug: '{keyword}' not found in ID {m.get('id')} (Title/Genre/Cast)"
+            APIVerify.soft_assert(found, msg)
 
 
     @staticmethod

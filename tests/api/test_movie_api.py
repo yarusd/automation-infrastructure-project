@@ -1,10 +1,14 @@
 import allure
 import pytest
-from data.api.api_ddt.api_ddt_data import *
-from data.api.movie_api_data import *
+from data.api.api_ddt.filter_scenarios_data import *
 from extensions.api_verifications import APIVerify
 from workflows.api.movie_api_flows import MovieApiFlows
 from workflows.web.movie_time_flows import MovieFlows
+from data.api.api_ddt.direct_payment_data import *
+from data.api.api_ddt.full_update_data import *
+from data.api.movie_api_data import *
+
+
 
 
 
@@ -24,23 +28,26 @@ class TestMovieAPI:
         APIVerify.verify_values_equals(actual_movies_count,EXPECTED_MOVIES_COUNT)
         
 
-    @allure.title("Verify Random Keyword Search Functionality")
+    @allure.title("Verify Keyword Search Functionality {test_num}")
     @allure.description("Validates searching for a random keyword returns results where keyword appears in at least one field.")
-    def test03_verify_free_search_accuracy(self, movie_flows:MovieApiFlows):
-        search_results = movie_flows.search_for_random_keyword(RANDOM_KEYWORD)
-        APIVerify.soft_verify_keyword_anywhere_in_results(search_results, RANDOM_KEYWORD)
+    @pytest.mark.parametrize("payload, expected_status, expected_keyword ,test_num",FILTER_SCENARIOS)
+    def test03_verify_search_engine_accuracy(self, movie_flows: MovieApiFlows,payload, expected_status, expected_keyword, test_num):
+        search_results = movie_flows.search_for_random_keyword(payload)
+        APIVerify.status_code(search_results, expected_status)
+        APIVerify.soft_verify_search_integrity(search_results.json(), expected_keyword)
         APIVerify.assert_all()
 
-    @allure.title("Verify Specific Metadata Filtering")
-    @allure.description("Checks if movies returned by a specific search (e.g., Genre or Year) as requested criteria.")
-    def test04_verify_filtered_search_results(self, movie_flows: MovieApiFlows):
-        search_results = movie_flows.search_for_specific_results(DICT_KEYWORD)
-        APIVerify.verify_all_movies_match_criteria(search_results,DICT_KEYWORD)
+    @allure.title("Verify Combined Search Functionality {test_num}")
+    @pytest.mark.parametrize("payload, expected_status, expected_keyword, test_num", COMBINED_FILTER_SCENARIOS)
+    def test04_combined_search_logic(self, movie_flows: MovieApiFlows, payload, expected_status, expected_keyword, test_num):
+        search_results = movie_flows.search_for_random_keyword(payload)
+        APIVerify.status_code(search_results,expected_status)
+        APIVerify.soft_verify_search_integrity(search_results.json(), expected_keyword)
         APIVerify.assert_all()
 
 
     @allure.title("Verify API Stability - Multiple Consecutive Requests")
-    @allure.description("Sending multiple of requests to ensure the server remains stable and returns successful status codes.")
+    @allure.description("Sends multiple concurrent/consecutive requests to ensure server resilience.")
     def test05_verify_api_stability_under_multiple_requests(self, movie_flows:MovieApiFlows):
         requests_list = movie_flows.send_multiple_requests(GET_REQUEST_AMOUNT)
         APIVerify.soft_verify_statuses(requests_list, EXPECTED_STATUS_SUCCESS_CODE)
@@ -48,7 +55,7 @@ class TestMovieAPI:
 
 
     @allure.title("Verify Required Fields Are Not Null")
-    @allure.description("Ensures that all required fields in a movies response exist and are not null or empty.")
+    @allure.description("Validates that all mandatory fields in the movie object are present and populated.")
     @allure.severity(allure.severity_level.CRITICAL)
     def test06_Verify_required_fields_not_null(self,movie_flows: MovieApiFlows):
         movies_list = movie_flows.get_full_movies_list()
@@ -82,23 +89,23 @@ class TestMovieAPI:
     @allure.severity(allure.severity_level.CRITICAL)    
     def test09_reset_api_db_unauthorized(self, movie_flows: MovieApiFlows):
         response = movie_flows.delete_request(DELETE_DATABASE)
-        APIVerify.status_code(response, EXPECTED_UNAUTORIZED_STATUS_CODE)
+        APIVerify.status_code(response, EXPECTED_UNAUTHORIZED_STATUS_CODE)
 
-    @allure.title("Update Movie Existing Information")
-    @allure.description("Verifies that an existing movie can be updated using a valid API Key") 
-    @allure.severity(allure.severity_level.CRITICAL)    
-    def test10__update_movie_with_authorizations(self, movie_flows: MovieApiFlows):
-        movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, PUT_MOVIE_DATA, USE_API_KEY)
-        print(movie_update.json())
-        APIVerify.json_contains(movie_update.json(),PUT_MOVIE_SUCCESS_MSG)
+    @allure.title("DDT Update Movie Existing Information {test_num}")
+    @allure.description("Data-Driven Test: Verifies that an existing movie can be updated using a valid API Key") 
+    @pytest.mark.parametrize("payload, expected_status, expected_msg,test_num",PUT_MOVIE_SCENARIOS)
+    def test10_update_movie_with_authorizations(self, movie_flows: MovieApiFlows,payload, expected_status, expected_msg, test_num):
+        movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, payload, USE_API_KEY)
+        APIVerify.status_code(movie_update,expected_status)
+        APIVerify.json_contains(movie_update.json(),expected_msg)
 
 
     @allure.title("Update Movie Without Authorization")
-    @allure.description("Security check to ensure the server rejects update requests when an API Key is missing.")
+    @allure.description("Security verification: Ensures the system rejects movie updates when an API Key is missing..")
     @allure.severity(allure.severity_level.CRITICAL)    
     def test11_update_movie_without_authorizations(self, movie_flows: MovieApiFlows):
-        movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, PUT_MOVIE_DATA)
-        APIVerify.status_code(movie_update, EXPECTED_UNAUTORIZED_STATUS_CODE)
+        movie_update = movie_flows.update_movie_request(PUT_MOVIE_ID, VALID_MOVIE)
+        APIVerify.status_code(movie_update, EXPECTED_UNAUTHORIZED_STATUS_CODE)
 
     @allure.title("Book Tickets Scenarios : {status_txt}")
     @allure.description("DDT: Verifying ticket booking with various data sets (Valid and Invalid).")

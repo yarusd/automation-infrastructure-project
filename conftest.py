@@ -8,6 +8,7 @@ import sqlite3
 from appium import webdriver
 from dotenv import load_dotenv
 import requests
+from tenacity import *
 from utils.common_ops import load_config
 from pytest import FixtureRequest
 from data.api.chuck_api_data import *
@@ -39,31 +40,22 @@ def page(playwright: Playwright, request:FixtureRequest):
     context.close()
     browser.close()
 
-# #to wake the free use RENDER:
-# @pytest.fixture(scope="session", autouse=True)
-# def wake_up_movie_api():
-#     """
-#     מנקה את בעיית ה-Timeout ב-Render: מעיר את השרת בתחילת הריצה.
-#     מבצע Polling (בדיקה חוזרת) כל 2 שניות עד שהשרת עונה.
-#     """
-#     url = MOVIE_API_URL
-#     print(f"\n--- 🔄 Waking up Movie API at {url} (Render Spin-up)... ---")
-    
-#     timeout = 60  # נחכה מקסימום דקה שהשרת יתעורר
-#     start_time = time.time()
-    
-#     while time.time() - start_time < timeout:
-#         try:
-#             # בדיקת דופק קצרה לשרת
-#             response = requests.get(url, timeout=5)
-#             if response.status_code == 200:
-#                 print(f"--- ✅ API is Awake! (Ready in {int(time.time() - start_time)}s) ---")
-#                 return
-#         except requests.exceptions.RequestException:
-#             # השרת עדיין בתהליך עלייה - מחכים 2 שניות ומנסים שוב
-#             time.sleep(2) 
-    
-#     print("--- ⚠️ Warning: API wake-up timed out. Tests might face TimeoutErrors. ---")
+#to wake the free use RENDER:
+@pytest.fixture(scope="session", autouse=True)
+def wake_up_movie_api(request):
+    if not any("api" in item.nodeid for item in request.session.items):
+        return
+    print(f"\n--- 🔄 Waking up Movie API... ---")
+
+    @retry(stop=stop_after_delay(60), wait=wait_fixed(2), reraise=True)
+    def attempt():
+        requests.get(MOVIE_API_URL, timeout=5).raise_for_status()
+    try:
+        attempt()
+        print("--- ✅ API is Awake! ---")
+    except:
+        print("--- ⚠️ Wake-up failed ---")
+        
     
 @pytest.fixture(scope = "class")
 def movie_time_flows(page):

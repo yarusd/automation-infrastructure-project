@@ -53,17 +53,10 @@ class MovieApiFlows:
         return movies_count
     
     @allure.step("Free search with random keyword")
-    def search_for_random_keyword(self,query:str) -> APIResponse:
-        params = {"q":query}
-        response = self.api.get(MOVIES_URL,params)
-        search_response = response.json()
-        return search_response
-    
-    @allure.step("Search for specific results")
-    def search_for_specific_results(self,query:dict) -> APIResponse:
+    def search_for_random_keyword(self,query:dict) -> APIResponse:
         response = self.api.get(MOVIES_URL,params=query)
-        search_response = response.json()
-        return search_response
+        return response
+    
     
 
     @allure.step("Send multiple get a joke request")
