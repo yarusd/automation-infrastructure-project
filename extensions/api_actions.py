@@ -48,12 +48,27 @@ class APIActions:
 
         response = self.request_context.put(
             url,
-            data=payload,
+            data=json.dumps(payload),
             headers=request_headers
         )
         self._log_response(response)
         return response
     
+    @allure.step("Send PATCH request to {url}")
+    def patch(self, url: str, payload: dict, headers: Optional[dict] = None):
+        request_headers = {"Content-Type": "application/json"}
+        
+        if headers:
+            request_headers.update(headers)
+
+        response = self.request_context.patch(
+            url,
+            data=json.dumps(payload),
+            headers=request_headers
+        )
+        self._log_response(response)
+        return response
+
 
     @allure.step("Send DELETE request to {url}")
     def delete(self, url: str, headers: Optional[dict] = None):
@@ -73,15 +88,25 @@ class APIActions:
     
     
 
-
+    @allure.step("Log Response")
     def _log_response(self, response):
         """
-        Log response details to Allure report.
+        Log response details to Allure report safely.
         """
+        try:
+            # נסיון לחלץ JSON לצורך תצוגה יפה בדו"ח
+            response_data = response.json()
+            content = json.dumps(response_data, indent=4)
+            type = allure.attachment_type.JSON
+        except Exception:
+            # אם זה לא JSON (למשל HTML), נשמור את הטקסט הגולמי
+            content = response.text()
+            type = allure.attachment_type.TEXT
+
         allure.attach(
-            json.dumps(response.json(), indent=4),
+            content,
             name=f"API Response - {response.status}",
-            attachment_type=allure.attachment_type.JSON
+            attachment_type=type
         )
         # assert response.ok, f"API request failed with status {response.status} - {response.text()}"
 

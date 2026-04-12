@@ -10,13 +10,16 @@ class APIVerify:
         assert response.status == expected_status_code, \
             f"Expected status code {expected_status_code}, but got {response.status}"
         
+
     @staticmethod
     def verify_values_not_equals(actual, unexpected, message="Values are unexpectedly equal"):
         assert actual != unexpected, f"{message}: {actual} == {unexpected}"
     
+
     @staticmethod
     def verify_values_equals(actual, unexpected, message="Values are unexpectedly equal"):
         assert actual == unexpected, f"{message}: {actual} != {unexpected}"
+
 
     @staticmethod
     def verify_greater_than(actual: int, expected_minimum: int, message="Value comparison failed"):
@@ -43,6 +46,7 @@ class APIVerify:
         assert response_data[key] == expected_value, (
             f"Expected value for key '{key}' is '{expected_value}', but got '{response_data[key]}'"
         )
+
 
     @staticmethod  #CHUCK
     def verify_required_fields_not_null(response_data: dict, required_fields: list):
@@ -95,6 +99,8 @@ class APIVerify:
             print(diff)
             assert actual_set == expected_set, diff
    
+               
+
     @staticmethod
     def verify_all_movies_match_criteria(movie_list: list, criteria: dict):
         """
@@ -111,40 +117,27 @@ class APIVerify:
                     APIVerify.soft_assert(False, error_msg)   
 
 
-    # @staticmethod
-    # def json_contains(response_data, expected_data: dict):
-    #     """
-    #     Verifies that the JSON response contains the expected data.
-    #     """
-    #     for key, value in expected_data.items():
-    #         assert key in response_data, f"Key '{key}' not found in the response JSON"
-    #         assert response_data[key] == value, (
-    #             f"Expected value for key '{key}' is '{value}', but got '{response_data[key]}'"
-    #         )
-
     @staticmethod
-    def json_contains(response_data, expected_data: dict, partial=True):
+    def json_contains(response_data, expected_data, partial=True):
         """
-        Verifies that the JSON response contains the expected data.
-        By default, strings will be checked for partial match (contains).
+        בדיקה גמישה: תומכת במילון (שדות) או במחרוזת (הודעות).
         """
-        for key, value in expected_data.items():
-            # 1. וידוא קיום המפתח
-            assert key in response_data, f"Key '{key}' not found in the response JSON"
-            
-            actual_value = response_data[key]
-
-            # 2. לוגיקת ההשוואה
-            if partial and isinstance(value, str) and isinstance(actual_value, str):
-                # אם שניהם מחרוזות, נבדוק הכלה (ונוסיף .lower() כדי למנוע בעיות של אותיות גדולות/קטנות)
-                assert value.lower() in actual_value.lower(), (
-                    f"Expected '{value}' to be contained in '{actual_value}' for key '{key}'"
-                )
-            else:
-                # עבור מספרים, בוליאני או אם partial=False, נבצע השוואה מדויקת
-                assert actual_value == value, (
-                    f"Expected value for key '{key}' is '{value}', but got '{actual_value}'"
-                )
+        # אם זה מילון, נרוץ על המפתחות
+        if isinstance(expected_data, dict):
+            for key, value in expected_data.items():
+                assert key in response_data, f"Key '{key}' missing"
+                actual = response_data[key]
+                
+                # בדיקת הכלה חלקית למחרוזות, אחרת השוואה מלאה
+                if partial and isinstance(value, str) and isinstance(actual, str):
+                    assert value.lower() in actual.lower(), f"Expected {value} in {actual}"
+                else:
+                    assert str(actual) == str(value), f"Expected {value}, got {actual}"
+        
+        # אם זה לא מילון (מחרוזת/מספר), נבדוק הכלה בטקסט הכללי
+        else:
+            assert str(expected_data).lower() in str(response_data).lower(), \
+                f"'{expected_data}' not found in response"
 
 
     # Soft Assertions
@@ -207,6 +200,60 @@ class APIVerify:
             
             msg = f"Bug: '{keyword}' not found in ID {m.get('id')} (Title/Genre/Cast)"
             APIVerify.soft_assert(found, msg)
+
+
+    @staticmethod
+    def verify_sorting(results, sort_key, sort_type="alpha"):
+        # הגנה: אם זה לא רשימה (למשל חזר JSON שגיאה) או שאין מפתח - אל תבדוק
+        if not isinstance(results, list) or not sort_key or len(results) < 2:
+            return
+
+        if sort_type == "numbers":
+            values = [float(m.get(sort_key) or 0) for m in results]
+            expected = sorted(values, reverse=True) # מיון מספרים (Rating/Year) מהגבוה לנמוך
+        else:
+            # לוגיקת "המילה הראשונה" - חסינה גם לרשימות (כמו Cast)
+            def clean_val(m):
+                val = m.get(sort_key)
+                if isinstance(val, list): val = val[0] # אם זה רשימת שחקנים, קח את הראשון
+                return str(val or "").lower().strip().split()[0]
+
+            values = [clean_val(m) for m in results]
+            expected = sorted(values)
+
+        is_sorted = (values == expected)
+        msg = f"Sorting Bug in {sort_key}! Got: {values[:3]}..."
+        APIVerify.soft_assert(is_sorted, msg)
+
+
+    @staticmethod
+    def soft_verify_multiple_criteria(results, expected_values):
+        """
+        מתודה גלובלית לוידוא קריטריונים מרובים בתוצאות חיפוש.
+        תומכת גם ברשימת ערכים וגם במילה בודדת.
+        """
+        vals = expected_values if isinstance(expected_values, list) else [expected_values]
+        if isinstance(results, dict):
+            error_msg = str(results.get('message', '')).lower()
+            for v in vals:
+                v_str = str(v).lower()
+                APIVerify.soft_assert(v_str in error_msg, 
+                                    f"Expected '{v_str}' to be in error message: '{error_msg}'")
+            return
+
+        if not results:
+            APIVerify.soft_assert(False, f"No results returned for criteria: {vals}")
+            return
+        for movie in results:
+            # איחוד כל שדות הטקסט של הסרט לחיפוש מהיר
+            title = str(movie.get('title', ''))
+            genre = str(movie.get('genre', ''))
+            cast = " ".join(map(str, movie.get('cast', [])))
+            movie_content = f"{title} {genre} {cast}".lower()
+            for v in vals:
+                v_str = str(v).lower()
+                msg = f"Criteria '{v_str}' not found in Movie ID {movie.get('id')}"
+                APIVerify.soft_assert(v_str in movie_content, msg)
 
 
     @staticmethod

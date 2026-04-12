@@ -25,6 +25,7 @@ class MovieApiFlows:
             headers = {"x-api-key": API_KEY}
         return self.api.post(url, payload=payload, headers=headers)
     
+
     @allure.step("Send put request")
     def update_movie_request(self, movie_id:int, payload: dict, use_api_key: bool = False) -> APIResponse:
         url = f"{MOVIES_URL}/{movie_id}"
@@ -33,6 +34,14 @@ class MovieApiFlows:
             headers = {"x-api-key": API_KEY}   
         return self.api.put(url,payload=payload, headers=headers)
  
+    @allure.step("Send PATCH request to update movie fields")
+    def patch_movie_request(self, movie_id: int, payload: dict, use_api_key: bool = False) -> APIResponse:
+        url = f"{MOVIES_URL}/{movie_id}"
+        headers = {}
+        if use_api_key:
+            headers = {"x-api-key": API_KEY}
+        return self.api.patch(url, payload=payload, headers=headers)
+
 
     @allure.step("Send DELETE request") 
     def delete_request(self, url: str, use_api_key: bool = False) -> APIResponse:
@@ -57,7 +66,6 @@ class MovieApiFlows:
         response = self.api.get(MOVIES_URL,params=query)
         return response
     
-    
 
     @allure.step("Send multiple get a joke request")
     def send_multiple_requests(self,amount:int) -> list:
@@ -77,12 +85,10 @@ class MovieApiFlows:
             values_list.append(new_value)
         return values_list
     
-    # @allure.step("Update movie info")
-    # def update_movie_info(self,id:str) -> APIResponse:
-    #     params = {"q":id}
-    #     response = self.api.get(MOVIES_URL,params)
-    #     update_ = response.json()
-    #     return search_response
-    
-    
+    @allure.step("Get json key value")
+    def get_value_from_key(self ,response:APIResponse , key:str) -> str :
+        res_data = response.json()
+        value = res_data.get(key)
+        print(f"key value is : {value}")
+        return value    
 
