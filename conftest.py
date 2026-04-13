@@ -4,7 +4,7 @@ import pytest
 import time
 import uuid
 import sqlite3
-
+from utils.jira_reporter import add_attachment_to_jira, report_jira_bug
 from appium import webdriver
 from dotenv import load_dotenv
 import requests
@@ -150,36 +150,75 @@ def db_connection():
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """
-    Hook to attach screenshots, videos, and traces to Allure reports on test failure.
-    """
-
     outcome = yield
     report = outcome.get_result()
 
     if report.when == "call" and report.failed:
-            page = item.funcargs.get("page")
+        jira_key = None
+        is_new = False
 
-            # Check if page exists AND our custom flag is True
-            if page and getattr(page, "_tracing_active", False):
-                timestamp = time.strftime("%Y%m%d-%H%M%S")
-                unique_id = str(uuid.uuid4())[:8]
-                base_filename = f"{item.name}_{timestamp}_{unique_id}"
+        try:
+            # --- שיפור 1: חילוץ כותרת Allure (במקום שם הפונקציה הטכני) ---
+            allure_title_marker = item.get_closest_marker("allure_title")
+            display_title = allure_title_marker.args[0] if allure_title_marker else item.name
+            
+            # --- שיפור 2: חילוץ חומרה (Severity) לטובת עדיפות בג'ירה ---
+            allure_severity = item.get_closest_marker("allure_severity")
+            severity_val = allure_severity.args[0] if allure_severity else "normal"
+            priority_level = "High" if severity_val in ['critical', 'blocker'] else "Medium"
 
-                # Attach screenshot
-                screenshot_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], f"{CONFIG['SCREENSHOT_PREFIX']}_{base_filename}.png")
-                attach_screenshot(page, item.name, screenshot_path)
+            # --- שיפור 3: חילוץ דפדפן מהקונפיג ---
+            browser_name = CONFIG.get("BROWSER_TYPE", "Unknown").upper()
+            
+            error_lines = str(report.longreprtext).split('\n')
+            short_error = error_lines[-1] if error_lines else "Unknown Error"
 
-                # Attach trace (only called if _tracing_active is True)
-                trace_name = f"{CONFIG['TRACE_PREFIX']}_{item.name}_{timestamp}.zip"
-                trace_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], trace_name)
-                
-                try:
-                    attach_trace(page, item.name, trace_path)
-                    # Set to False so we don't try to stop it again elsewhere
-                    page._tracing_active = False 
-                except Exception as e:
-                    print(f"Failed to stop/attach trace: {e}")
+            # עיצוב התיאור עם כותרת קריאה ופרטי סביבה
+            formatted_description = (
+                f"h2. 🛑 Test Failure: {display_title}\n\n"
+                f"*Technical Name:* `{item.name}`\n"
+                f"*Summary:* {short_error}\n"
+                f"*Environment:* QA Automation | *Browser:* {browser_name}\n\n"
+                f"h3. 📝 Error Details\n"
+                f"{{code:python}}\n{report.longreprtext}\n{{code}}\n\n"
+                f"---- \n"
+                f"ℹ️ _This bug was created automatically by the Playwright Automation Framework._"
+            )
 
+            # שליחה לג'ירה - שים לב שאנחנו שולחים את ה-display_title לסמרי
+            # אבל משאירים את item.name לטובת בדיקת כפילויות בתוך report_jira_bug
+            jira_key, is_new = report_jira_bug(
+                test_name=item.name, 
+                summary=f"Bug: {display_title} - {short_error[:40]}", 
+                description=formatted_description,
+                priority=priority_level,
+                labels=['Automation', 'Playwright', browser_name]
+            )
+            
+            if jira_key:
+                allure.dynamic.link(f"{os.getenv('JIRA_URL')}/browse/{jira_key}", name=f"Jira: {jira_key}")
+        except Exception as e:
+            print(f"Jira reporting failed: {e}")
 
+        # --- טיפול בצילומי מסך ו-Trace (נשאר כפי שהיה, רק מוודא שמשתמשים ב-jira_key) ---
+        page = item.funcargs.get("page")
+        if page and getattr(page, "_tracing_active", False):
+            timestamp = time.strftime("%Y%m%d-%H%M%S")
+            unique_id = str(uuid.uuid4())[:8]
+            base_filename = f"{item.name}_{timestamp}_{unique_id}"
 
+            screenshot_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], f"{CONFIG['SCREENSHOT_PREFIX']}_{base_filename}.png")
+            attach_screenshot(page, item.name, screenshot_path)
+
+            if jira_key and is_new:
+                add_attachment_to_jira(jira_key, screenshot_path)
+            elif jira_key and not is_new:
+                print(f"ℹ️ Skipping screenshot upload for existing bug {jira_key}")
+
+            trace_name = f"{CONFIG['TRACE_PREFIX']}_{item.name}_{timestamp}.zip"
+            trace_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], trace_name)
+            try:
+                attach_trace(page, item.name, trace_path)
+                page._tracing_active = False 
+            except Exception as e:
+                print(f"Failed to stop/attach trace: {e}")

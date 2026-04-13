@@ -1,9 +1,9 @@
 import allure
 import pytest
-from data.api.api_ddt.user_history_data import USER_ORDER_HISTORY
 from extensions.api_verifications import APIVerify
 from workflows.api.movie_api_flows import MovieApiFlows
 from workflows.web.movie_time_flows import MovieFlows
+from data.api.api_ddt.user_history_data import *
 from data.api.api_ddt.patch_scenarios_data import *
 from data.api.api_ddt.combined_filter_data import *
 from data.api.api_ddt.filter_scenarios_data import *
