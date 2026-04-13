@@ -47,7 +47,7 @@ def wake_up_movie_api(request):
         return
     print(f"\n--- 🔄 Waking up Movie API... ---")
 
-    @retry(stop=stop_after_delay(60), wait=wait_fixed(2), reraise=True)
+    @retry(stop=stop_after_delay(62), wait=wait_fixed(2), reraise=True)
     def attempt():
         requests.get(MOVIE_API_URL, timeout=5).raise_for_status()
     try:
@@ -74,12 +74,6 @@ def navigate_to_homepage(movie_time_flows:MovieFlows):
 
 
 @pytest.fixture(scope="class")
-def chuck_context(playwright: Playwright):
-    context = playwright.request.new_context(base_url=CHUCK_BASE_URL)
-    yield context
-    context.dispose()
-
-@pytest.fixture(scope="class")
 def movie_context(playwright: Playwright):
     context = playwright.request.new_context(base_url=MOVIE_API_URL)
     yield context
@@ -98,6 +92,21 @@ def setup_clean_database(movie_flows: MovieApiFlows, request):
                 response = movie_flows.delete_request(DELETE_DATABASE, use_api_key=True)
                 
     yield response
+
+
+@pytest.fixture(scope="function")
+def web_sync_context(playwright: Playwright):
+    browser = get_browser(playwright, CONFIG["BROWSER_TYPE"].lower())
+    context = browser.new_context(no_viewport=True)    
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)    
+    page = context.new_page()
+    page._tracing_active = True
+    page.goto(MOVIE_TIME_URL)
+    flows = MovieFlows(page)
+    yield flows 
+    page.close()
+    context.close()
+    browser.close()
 
 
 @pytest.fixture
@@ -120,7 +129,11 @@ def mobile_setup():
         yield driver
         driver.quit()
 
-
+@pytest.fixture(scope="class")
+def chuck_context(playwright: Playwright):
+    context = playwright.request.new_context(base_url=CHUCK_BASE_URL)
+    yield context
+    context.dispose()
 
 @pytest.fixture(scope="function")
 def mobile_flows(mobile_setup):
