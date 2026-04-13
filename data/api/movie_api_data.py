@@ -1,4 +1,5 @@
 import pytest
+
 MOVIE_API_URL ="https://movie-time-api.onrender.com/api/"
 USE_API_KEY =True
 
@@ -11,24 +12,26 @@ EXPECTED_FORBIDDEN_STATUS = 403
 EXPECTED_NOT_FOUND_STATUS = 404
 
 # URL ENDPOINTS:
-TITLE_KEY = "title"
-ORDER_KEY = "orderId"
 MOVIES_URL = "movies"
-RESERV_URL = "orders"
+ORDER_URL = "orders"
 DIRECT_CHECKOUT_URL= "payments/checkout"
 DELETE_DATABASE = "test/reset"
 PAY_FOR_RESERV_URL = "payments/pay-existing"
 
-
+TITLE_KEY = "title"
+ORDER_KEY = "orderId"
 GET_REQUEST_AMOUNT = 20
 EXPECTED_MOVIES_COUNT = 60
 REQUIRED_FIELDS = ["id", "title", "genre","duration"]
-ORDER_CONFIRMED_MSG = {'status': 'confirmed'}
 PUT_MOVIE_ID = 1
-PATCH_MOVIE_ID = 1
+PATCH_MOVIE_ID = 2
 VALID_PATCH_DATA = { "title": "BLOCKBUSTER" }
 UNAUTHORIZED_MSG = "missing x-api-key"
 EXP_DOUBLE_BOOKING_MSG = {'message': 'Seats already booked.'}
+ORDER_CONFIRMED_MSG = {'status': 'confirmed'}
+
+
+
 
 
 

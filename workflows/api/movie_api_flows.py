@@ -18,6 +18,15 @@ class MovieApiFlows:
     def send_a_get_request(self,url:str)-> APIResponse:
         return self.api.get(url)
 
+    @allure.step("Send get request for user order history")
+    def get_user_order_history(self, user_id: int,header_user_id:int , use_api_key: bool = False) -> APIResponse:
+        url = f"{ORDER_URL}/{user_id}"
+        headers = {
+            "X-USER-ID": str(header_user_id) }
+        if use_api_key:
+            headers["x-api-key"] = API_KEY
+        return self.api.get(url, headers=headers)
+    
     @allure.step("Send post request to create movie")
     def send_post_request(self, url: str, payload: dict, use_api_key: bool = False) -> APIResponse:
         headers = {}   
