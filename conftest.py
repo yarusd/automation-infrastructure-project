@@ -11,13 +11,11 @@ import requests
 from tenacity import *
 from utils.common_ops import load_config
 from pytest import FixtureRequest
-from data.api.chuck_api_data import *
 from data.web.movie_time_data import *
 from data.api.movie_api_data import *
 from playwright.sync_api import Page, Playwright
 from workflows.api.movie_api_flows import MovieApiFlows
 from workflows.mobile.mobile_flow import MobileFlows
-from workflows.api.chuck_api_flows import ChuckApiFlows
 from workflows.web.chuck_web_flows import ChuckWebFlows
 from workflows.web.movie_time_flows import MovieFlows
 from utils.fixture_helpers import get_browser, attach_screenshot, attach_trace
@@ -109,13 +107,6 @@ def web_sync_context(playwright: Playwright):
     browser.close()
 
 
-@pytest.fixture
-def chuck_flows(chuck_context):
-    return ChuckApiFlows(chuck_context)
-
-@pytest.fixture
-def chuck_web_flows(page):
-    return ChuckWebFlows(page)
 
 @pytest.fixture(scope="class")
 def mobile_setup():
@@ -129,11 +120,6 @@ def mobile_setup():
         yield driver
         driver.quit()
 
-@pytest.fixture(scope="class")
-def chuck_context(playwright: Playwright):
-    context = playwright.request.new_context(base_url=CHUCK_BASE_URL)
-    yield context
-    context.dispose()
 
 @pytest.fixture(scope="function")
 def mobile_flows(mobile_setup):
