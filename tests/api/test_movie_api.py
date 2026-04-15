@@ -1,5 +1,8 @@
 import allure
 import pytest
+from data.api.api_ddt.delete_movie_scenarios import *
+from data.api.api_ddt.new_movie_data import *
+from data.api.api_ddt.register_data import *
 from extensions.api_verifications import APIVerify
 from workflows.api.movie_api_flows import MovieApiFlows
 from workflows.web.movie_time_flows import MovieFlows
@@ -21,9 +24,18 @@ class TestMovieAPI:
 
 # ===================== GET REQUESTS ======================= #
 
+
+    @allure.title("Verify System Up")
+    @allure.description("Verify system up and diaplay movies count")
+    def test01_get_system_integrity_check(self, movie_flows: MovieApiFlows):
+        response = movie_flows.send_a_get_request(HEALTH_URL)
+        APIVerify.status_code(response ,EXPECTED_SUCCESS_STATUS_CODE)
+        APIVerify.json_contains(response.json() , EXP_HEALTH_DATA)
+
+
     @allure.title("Verify Total Movies Count")
     @allure.description("Validates that the number of movies returned by the API matches the expected count.")
-    def test01_verify_movies_list_count(self, movie_flows:MovieApiFlows):
+    def test02_verify_movies_list_count(self, movie_flows:MovieApiFlows):
         response = movie_flows.send_a_get_request(MOVIES_URL)
         APIVerify.status_code(response, EXPECTED_SUCCESS_STATUS_CODE)
 
@@ -33,7 +45,7 @@ class TestMovieAPI:
     @allure.title("DDT: Verify Keyword Search Functionality {test_name}")
     @allure.description("DDT :Validates searching for a  keyword returns results where keyword appears in at least one field in (cast, title, genre).")
     @pytest.mark.parametrize("payload, expected_status, expected_keyword ,test_name",FILTER_SCENARIOS)
-    def test02_verify_search_engine_accuracy(self, movie_flows: MovieApiFlows,payload, expected_status, expected_keyword, test_name):
+    def test03_verify_search_engine_accuracy(self, movie_flows: MovieApiFlows,payload, expected_status, expected_keyword, test_name):
         search_results = movie_flows.search_for_random_keyword(payload)
         APIVerify.status_code(search_results, expected_status)
         APIVerify.soft_verify_search_integrity(search_results.json(), expected_keyword)
@@ -43,7 +55,7 @@ class TestMovieAPI:
     @allure.title("DDT : Combined Search: {test_name}")
     @allure.description("DDT : Verifies that filtering by multiple criteria (e.g., Title + Genre) returns correct movies or error messages.") 
     @pytest.mark.parametrize("payload, expected_status, expected_keyword, test_name", COMBINED_FILTER_SCENARIOS)
-    def test03_combined_search_logic(self, movie_flows: MovieApiFlows, payload, expected_status, expected_keyword, test_name):
+    def test04_combined_search_logic(self, movie_flows: MovieApiFlows, payload, expected_status, expected_keyword, test_name):
         search_results = movie_flows.search_for_random_keyword(payload)
         APIVerify.status_code(search_results,expected_status)
         APIVerify.soft_verify_multiple_criteria(search_results.json(), expected_keyword)
@@ -52,15 +64,15 @@ class TestMovieAPI:
     @allure.title("DDT : Sorting Integrity: {test_name}")
     @allure.description("DDT : Validates that the API returns movies correctly sorted by Title, Year, or Rating according to the requested sort type.")
     @pytest.mark.parametrize("payload, status, key, sort_type, test_name", SORT_SCENARIOS)
-    def test04_sorting_integrity(self, movie_flows: MovieApiFlows, payload, status, key, sort_type, test_name):
+    def test05_sorting_integrity(self, movie_flows: MovieApiFlows, payload, status, key, sort_type, test_name):
         sort_results = movie_flows.search_for_random_keyword(payload)
         APIVerify.status_code(sort_results, status)    
-        APIVerify.verify_sorting(sort_results.json(), key, sort_type)
+        APIVerify.soft_verify_sorting(sort_results.json(), key, sort_type)
         APIVerify.assert_all()
 
     @allure.title("Verify API Stability - Multiple Consecutive Requests")
     @allure.description("Sends multiple concurrent/consecutive requests to ensure server resilience.")
-    def test05_verify_api_stability_under_multiple_requests(self, movie_flows:MovieApiFlows):
+    def test06_verify_api_stability_under_multiple_requests(self, movie_flows:MovieApiFlows):
         requests_list = movie_flows.send_multiple_requests(GET_REQUEST_AMOUNT)
         APIVerify.soft_verify_statuses(requests_list, EXPECTED_SUCCESS_STATUS_CODE)
         APIVerify.assert_all()
@@ -69,7 +81,7 @@ class TestMovieAPI:
     @allure.title("Verify Required Fields Are Not Null")
     @allure.description("Validates that all mandatory fields in the movie object are present and populated.")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test06_verify_required_fields_not_null(self,movie_flows: MovieApiFlows):
+    def test07_verify_required_fields_not_null(self,movie_flows: MovieApiFlows):
         movies_list = movie_flows.get_full_movies_list()
         APIVerify.verify_required_fields_not_empty(movies_list, REQUIRED_FIELDS)
     
@@ -77,7 +89,7 @@ class TestMovieAPI:
     @allure.title("Data Integrity: API vs Web Movie Titles Synchronization")
     @allure.description("Validates the list of movie titles in Backend API matches the Web UI.")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test07_verify_equal_movies_from_web_and_api(self, movie_flows: MovieApiFlows, web_sync_context: MovieFlows):
+    def test08_verify_equal_movies_from_web_and_api(self, movie_flows: MovieApiFlows, web_sync_context: MovieFlows):
         api_movies_list = movie_flows.get_movies_value(TITLE_KEY)
     
         web_sync_context.navigate_to_all_movies()
@@ -88,12 +100,43 @@ class TestMovieAPI:
     @allure.title("DDT :User Order History {test_name}")
     @allure.description("Validates ID matching between URL and X-USER-ID header to prevent security breaches.")
     @pytest.mark.parametrize("userId, headerId, status,test_name", USER_ORDER_HISTORY)
-    def test08_verify_user_order_history_validation(self, movie_flows: MovieApiFlows,userId, headerId, status,test_name):
+    def test09_verify_user_order_history_validation(self, movie_flows: MovieApiFlows,userId, headerId, status,test_name):
         response = movie_flows.get_user_order_history(userId, headerId)
-        print(response.json())
         APIVerify.status_code(response, status)
 
+
+    def test10_verify_movies_gallery_uniquness(self, movie_flows: MovieApiFlows):
+        movies_list = movie_flows.send_a_get_request(MOVIES_URL)
+        APIVerify.verify_uniqueness(movies_list.json(), ID_KEY)
+        APIVerify.verify_uniqueness(movies_list.json(),TITLE_KEY)
+        APIVerify.assert_all()
+
     # ================== POST REQUESTS ===================== #
+
+    @allure.title("DDT : register Validation: {test_name}")
+    @allure.description("DDT : Validating register flows with positive and negative scenarios.")
+    @pytest.mark.parametrize("payload, expected_status, expected_msg,test_name", REGISTER_SCENARIOUS)
+    def test11_valid_register_scenarios(self, movie_flows: MovieApiFlows,payload, expected_status, expected_msg, test_name):
+        order_request = movie_flows.send_post_request(REGISTER_URL,payload)
+        APIVerify.status_code(order_request,expected_status)
+        APIVerify.json_contains(order_request.json(), expected_msg)
+
+    @allure.title("DDT - Create Movie: {test_name}")
+    @allure.description("Verifies movie add with valid and invalid payloads. Validates status codes and response data integrity.")
+    @pytest.mark.parametrize("payload, expected_status, expected_msg,test_name", NEW_MOVIE_SCENARIOS)
+    def test10_add_movie_to_catalog_scenarios(self, movie_flows: MovieApiFlows, payload, expected_status, expected_msg,test_name):
+        post_response = movie_flows.send_post_request(MOVIES_URL,payload ,USE_API_KEY)
+        APIVerify.status_code(post_response, expected_status)
+        APIVerify.verify_required_fields_not_empty(post_response.json(), REQUIRED_FIELDS)
+
+
+    @allure.title("Create Movie: Unauthorized Access Attempt")
+    @allure.description("Security test verifying the API correctly blocks requests without a valid API Key")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test11_post_create_movie_unauthorized(self, movie_flows: MovieApiFlows):
+        post_response = movie_flows.send_post_request(MOVIES_URL,NEW_MOVIE_DATA)
+        APIVerify.status_code(post_response, EXPECTED_UNAUTHORIZED_STATUS_CODE)  
+
 
     @allure.title("DDT : Payment Validation: {test_name}")
     @allure.description("DDT : Validating direct payment flows with positive and negative scenarios.")
@@ -192,3 +235,38 @@ class TestMovieAPI:
         response = movie_flows.delete_request(DELETE_DATABASE)
         APIVerify.status_code(response, EXPECTED_UNAUTHORIZED_STATUS_CODE)
     
+
+    @allure.title("DDT - Movie Validation: {test_name}")
+    @allure.description("Verifies DELETE logic for various ID scenarios, including valid, missing, and invalid IDs.")
+    @pytest.mark.parametrize("movie_id, expected_status, test_name",DELETE_MOVIE_SCENARIOS)
+    def test_19_delete_movie_from_catalog(self, movie_flows: MovieApiFlows,movie_id, expected_status, test_name):
+        response = movie_flows.delete_movie_request(movie_id,USE_API_KEY)
+        APIVerify.status_code(response,expected_status)
+
+
+    @allure.title("Security - Movie Delete: Unauthorized Access Attempt")
+    @allure.description("Security test verifying that deleting a movie is blocked without a valid API Key.")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test20_delete_movie_unauthorized(self, movie_flows: MovieApiFlows):
+        response = movie_flows.delete_movie_request(DEL_MOVIE_ID)
+        APIVerify.status_code(response, EXPECTED_UNAUTHORIZED_STATUS_CODE)
+
+
+    @allure.title("DELETE - Verify Booked Order Deletion")
+    @allure.description("E2E Flow: Create a new seat reservation and verify it can be successfully deleted using its unique Order ID.")
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test21_verify_booked_order_deletion(self, movie_flows: MovieApiFlows):
+        # Book reservation
+        book_order = movie_flows.send_post_request(ORDER_URL, VALID_BOOKING)
+        order_id = movie_flows.get_value_from_key(book_order, ORDER_KEY)
+
+        # Delete reservation
+        delete_order = movie_flows.delete_booked_order(order_id)
+        APIVerify.status_code(delete_order, EXPECTED_SUCCESS_STATUS_CODE)
+        APIVerify.json_contains(delete_order.json(), EXP_ORDER_DEL_MSG)
+
+    @allure.title("DELETE - Try to Delete Without Order ID")
+    @allure.description("Negative test: Verifies that the system returns 404 when the Order ID is missing from the URL path.")
+    def test22_verify_not_booking_without_order_id(self, movie_flows: MovieApiFlows):
+        delete_booking = movie_flows.delete_booked_order("")
+        APIVerify.status_code(delete_booking,EXPECTED_NOT_FOUND_STATUS)

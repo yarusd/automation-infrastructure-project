@@ -226,11 +226,7 @@ class WebVerify:
         """
         soft_assert(element.is_visible(), message)
 
-    @staticmethod
-    @allure.step("Raises all collected assertion errors at once")
-    def soft_all():
-        """Raises all collected assertion errors at once."""
-        verify_expectations()
+
 
     @staticmethod
     @allure.step("Verify all elements contain: {expected_text}")
@@ -248,4 +244,8 @@ class WebVerify:
     def is_true(condition: bool, message: str = None):
         assert condition, message or "ERROR - Condition is not True"
 
-        
+    @staticmethod
+    @allure.step("Raises all collected assertion errors at once")
+    def soft_all():
+        """Raises all collected assertion errors at once."""
+        verify_expectations()

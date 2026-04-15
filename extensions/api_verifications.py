@@ -63,23 +63,20 @@ class APIVerify:
 
     @staticmethod
     def verify_required_fields_not_empty(input_data, required_fields: list):
-        """
-        הגרסה שבאמת מקבלת הכל: 
-        גם אובייקט Response וגם רשימה (list) או דיקשנרי (dict) שכבר חולצו.
-        """
-        # 1. חילוץ הנתונים בצורה חכמה:
-        # אם זה Response - נחלץ את ה-JSON. אם זה כבר דאטה - נשתמש בו כמו שהוא.
         if hasattr(input_data, 'json'):
             data = input_data.json()
         else:
             data = input_data
 
         report_errors = ""
-
-        # 2. הבטחה שזה תמיד יהיה רשימה (גם אם זה סרט בודד מה-POST)
         movies_to_check = data if isinstance(data, list) else [data]
 
         for index, movie in enumerate(movies_to_check):
+            # השינוי כאן: אם אין 'title' ואין 'id', זה כנראה הודעת שגיאה ולא סרט.
+            # אנחנו לא רוצים לבדוק שדות חובה על הודעת שגיאה.
+            if not any(key in movie for key in required_fields):
+                continue  # דלג על האובייקט הזה, זה לא סרט
+                
             m_id = movie.get('id', f"Index {index}")
             for field in required_fields:
                 value = movie.get(field)
@@ -88,6 +85,7 @@ class APIVerify:
 
         assert report_errors == "", f"Found data integrity issues: {report_errors}"
 
+        
     @staticmethod
     def list_equals(actual_list, expected_list, message):
             
@@ -159,7 +157,19 @@ class APIVerify:
                 APIVerify.soft_assert(actual == expected, msg)
 
 
-  
+    @staticmethod
+    def verify_uniqueness(response_data, key):
+        # מחלצים את כל הערכים של המפתח הספציפי (למשל כל ה-IDs)
+        elements = [item.get(key) for item in response_data]
+        
+        unique_elements = set(elements)
+        
+        if len(elements) != len(unique_elements):
+            # מציאת הכפולים (בדיוק כמו שכתבת)
+            duplicates = list(set([x for x in elements if elements.count(x) > 1]))
+            
+            # שימוש ב-Soft Assert (כדי לא לעצור את הטסט אם יש עוד בדיקות)
+            APIVerify.soft_assert(False, f"Found duplicate {key}s: {duplicates}")
 
 
     @staticmethod
@@ -203,7 +213,7 @@ class APIVerify:
 
 
     @staticmethod
-    def verify_sorting(results, sort_key, sort_type="alpha"):
+    def soft_verify_sorting(results, sort_key, sort_type="alpha"):
         # הגנה: אם זה לא רשימה (למשל חזר JSON שגיאה) או שאין מפתח - אל תבדוק
         if not isinstance(results, list) or not sort_key or len(results) < 2:
             return

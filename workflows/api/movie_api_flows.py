@@ -58,7 +58,23 @@ class MovieApiFlows:
         if use_api_key:
             headers = {"x-api-key": API_KEY}   
         return self.api.delete(url, headers=headers)
+
+
+    @allure.step("Send DELETE movie request") 
+    def delete_movie_request(self, movie_id: int, use_api_key: bool = False) -> APIResponse:
+        url = f"{MOVIES_URL}/{movie_id}"
+        headers = {}   
+        if use_api_key:
+            headers = {"x-api-key": API_KEY}   
+        return self.api.delete(url, headers=headers)
     
+    @allure.step("Send DELETE request") 
+    def delete_booked_order(self, order_id: str, use_api_key: bool = False) -> APIResponse:
+        url = f"{ORDER_URL}/{order_id}"
+        headers = {}   
+        if use_api_key:
+            headers = {"x-api-key": API_KEY}   
+        return self.api.delete(url, headers=headers)
 
 
     @allure.step("Get full movie list")

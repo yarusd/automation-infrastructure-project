@@ -47,12 +47,12 @@ def wake_up_movie_api(request):
 
     @retry(stop=stop_after_delay(62), wait=wait_fixed(2), reraise=True)
     def attempt():
-        requests.get(MOVIE_API_URL, timeout=5).raise_for_status()
+        requests.get(f"{MOVIE_API_URL}/{HEALTH_URL}", timeout=2).raise_for_status()
     try:
         attempt()
         print("--- ✅ API is Awake! ---")
     except:
-        print("--- ⚠️ Wake-up failed ---")
+        print("--- ⚠️ Trying again ---")
         
     
 @pytest.fixture(scope = "class")
