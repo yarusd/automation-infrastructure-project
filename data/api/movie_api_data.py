@@ -3,12 +3,13 @@ MOVIE_API_URL ="https://movie-time-api.onrender.com/api/"
 USE_API_KEY =True
 
 # EXPECTED STATUS
-EXPECTED_SUCCESS_STATUS_CODE = 200
-EXPECTED_CREATED_STATUS_CODE = 201
-EXPECTED_BAD_REQUEST_STATUS = 400
-EXPECTED_UNAUTHORIZED_STATUS_CODE = 401
-EXPECTED_FORBIDDEN_STATUS = 403
-EXPECTED_NOT_FOUND_STATUS = 404
+EXP_SUCCESS_STAT = 200
+EXP_CREATED_STAT = 201
+EXP_BAD_REQUEST_STAT = 400
+EXP_UNAUTHORIZED_STAT = 401
+EXP_FORBIDDEN_STAT = 403
+EXP_NOT_FOUND_STAT = 404
+EXP_DUPLICATE_STAT = 409
 
 # URL ENDPOINTS:
 MOVIES_URL = "movies"
@@ -38,8 +39,12 @@ EXP_HEALTH_DATA = { "status": "UP", "moviesCount": 60}
 NEW_MOVIE_DATA = {"title": "New Movie", "genre": "Action",
                     "duration": 148,"year": 2024, "badge": "NOW SHOWING"}
 EXP_ORDER_DEL_MSG = { "message": "Order cancelled successfully"}
-
-
+EXP_DOUBLE_REGISTER_MSG = {'message': 'User already exists'}
+NEW_REGISTER = {"name": "Liya Degel",
+                "email": "liya@test.com",
+                "password": "securepass123",
+                "password_confirmation": "securepass123"}
+LOGIN_INFO = { "email": "user1@test.com", "password": "123456"}
 
 
 
