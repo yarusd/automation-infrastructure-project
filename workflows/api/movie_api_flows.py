@@ -1,6 +1,7 @@
 import json
 import allure
 from playwright.sync_api import APIRequestContext, APIResponse
+from conftest import *
 from data.api.movie_api_data import *
 from extensions.api_actions import APIActions
 import os
@@ -10,9 +11,9 @@ API_KEY = os.getenv('API_KEY')
 
 class MovieApiFlows:
 
-    def __init__(self,request_context:APIRequestContext):
+    def __init__(self,request_context:APIRequestContext ,db_connection):
         self.api = APIActions(request_context)
-
+        self.db = db_connection        # שומר אותו בתוך self
 
     @allure.step("Send get request")
     def send_a_get_request(self,url:str)-> APIResponse:
@@ -116,4 +117,9 @@ class MovieApiFlows:
         value = res_data.get(key)
         print(f"key value is : {value}")
         return value    
-
+    
+    def get_db_categories(self,s_word):
+        cursor = self.db.cursor()
+        cursor.execute(f"SELECT {s_word} FROM Movies") 
+        # return [row[0] for row in cursor.fetchall()]
+        return cursor.fetchall()

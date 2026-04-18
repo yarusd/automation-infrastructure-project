@@ -6,7 +6,9 @@
     "TRACES_DIR": "traces/",
     "ALLURE_RESULTS_DIR": "allure-results",
     "SCREENSHOT_PREFIX": "screenshot",
-    "TRACE_PREFIX": "trace"
+    "TRACE_PREFIX": "trace",
+    "DB_PATH" : "data/api/movie_time_.db" 
+
 
 
 

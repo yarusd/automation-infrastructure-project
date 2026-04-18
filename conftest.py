@@ -4,11 +4,11 @@ import pytest
 import time
 import uuid
 import sqlite3
-from utils.jira_reporter import add_attachment_to_jira, report_jira_bug
-from appium import webdriver
-from dotenv import load_dotenv
 import requests
 from tenacity import *
+from utils.jira_reporter import *
+from appium import webdriver
+from dotenv import load_dotenv
 from utils.common_ops import load_config
 from pytest import FixtureRequest
 from data.web.movie_time_data import *
@@ -16,14 +16,12 @@ from data.api.movie_api_data import *
 from playwright.sync_api import Page, Playwright
 from workflows.api.movie_api_flows import MovieApiFlows
 from workflows.mobile.mobile_flow import MobileFlows
-from workflows.web.chuck_web_flows import ChuckWebFlows
 from workflows.web.movie_time_flows import MovieFlows
-from utils.fixture_helpers import get_browser, attach_screenshot, attach_trace
-
+from utils.fixture_helpers import *
 
 load_dotenv()
-# Load the configuration
 CONFIG = load_config()     
+
 
 @pytest.fixture(scope = "class")
 def page(playwright: Playwright, request:FixtureRequest):
@@ -33,7 +31,6 @@ def page(playwright: Playwright, request:FixtureRequest):
     page = context.new_page()
     page._tracing_active = True
     yield page    
-    # Best practice: Close page before context
     page.close()
     context.close()
     browser.close()
@@ -78,8 +75,8 @@ def movie_context(playwright: Playwright):
     context.dispose()
 
 @pytest.fixture
-def movie_flows(movie_context):
-    return MovieApiFlows(movie_context)
+def movie_flows(movie_context, db_connection):
+    return MovieApiFlows(movie_context, db_connection)
 
 @pytest.fixture(autouse=True)
 def setup_clean_database(movie_flows: MovieApiFlows, request):
@@ -123,16 +120,14 @@ def mobile_setup():
 
 @pytest.fixture(scope="function")
 def mobile_flows(mobile_setup):
-    # Injecting the driver instance into the business logic layer
     return MobileFlows(mobile_setup)
 
 
 @pytest.fixture(scope="class")
 def db_connection():
-    path = "tests/api/joke_categories.db"
-    conn = sqlite3.connect(path)
-    yield conn
-    conn.close()
+    db = sqlite3.connect(CONFIG["DB_PATH"])
+    yield db
+    db.close()
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -141,48 +136,7 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
 
     if report.when == "call" and report.failed:
-        jira_key = None
-        is_new = False
-
-        # --- JIRA REPORTING DISABLED (Quick way) ---
-        # try:
-        #     allure_title_marker = item.get_closest_marker("allure_title")
-        #     display_title = allure_title_marker.args[0] if allure_title_marker else item.name
-        #     
-        #     allure_severity = item.get_closest_marker("allure_severity")
-        #     severity_val = allure_severity.args[0] if allure_severity else "normal"
-        #     priority_level = "High" if severity_val in ['critical', 'blocker'] else "Medium"
-        #
-        #     browser_name = CONFIG.get("BROWSER_TYPE", "Unknown").upper()
-        #     
-        #     error_lines = str(report.longreprtext).split('\n')
-        #     short_error = error_lines[-1] if error_lines else "Unknown Error"
-        #
-        #     formatted_description = (
-        #         f"h2. 🛑 Test Failure: {display_title}\n\n"
-        #         f"*Technical Name:* `{item.name}`\n"
-        #         f"*Summary:* {short_error}\n"
-        #         f"*Environment:* QA Automation | *Browser:* {browser_name}\n\n"
-        #         f"h3. 📝 Error Details\n"
-        #         f"{{code:python}}\n{report.longreprtext}\n{{code}}\n\n"
-        #         f"---- \n"
-        #         f"ℹ️ _This bug was created automatically by the Playwright Automation Framework._"
-        #     )
-        #
-        #     jira_key, is_new = report_jira_bug(
-        #         test_name=item.name, 
-        #         summary=f"Bug: {display_title} - {short_error[:40]}", 
-        #         description=formatted_description,
-        #         priority=priority_level,
-        #         labels=['Automation', 'Playwright', browser_name]
-        #     )
-        #     
-        #     if jira_key:
-        #         allure.dynamic.link(f"{os.getenv('JIRA_URL')}/browse/{jira_key}", name=f"Jira: {jira_key}")
-        # except Exception as e:
-        #     print(f"Jira reporting failed (Expected - Disabled): {e}")
-
-        # --- טיפול בצילומי מסך ו-Trace (נשאר פעיל עבור Allure בלבד) ---
+       
         page = item.funcargs.get("page")
         if page and getattr(page, "_tracing_active", False):
             timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -191,10 +145,6 @@ def pytest_runtest_makereport(item, call):
 
             screenshot_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], f"{CONFIG['SCREENSHOT_PREFIX']}_{base_filename}.png")
             attach_screenshot(page, item.name, screenshot_path)
-
-            # ניסיון צירוף הקובץ לג'ירה מושבת כי jira_key תמיד יהיה None
-            # if jira_key and is_new:
-            #     add_attachment_to_jira(jira_key, screenshot_path)
 
             trace_name = f"{CONFIG['TRACE_PREFIX']}_{item.name}_{timestamp}.zip"
             trace_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], trace_name)

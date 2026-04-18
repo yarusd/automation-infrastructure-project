@@ -301,3 +301,7 @@ class TestMovieAPI:
     def test30_verify_not_booking_without_order_id(self, movie_flows: MovieApiFlows):
         delete_booking = movie_flows.delete_booked_order("")
         APIVerify.status_code(delete_booking,EXP_NOT_FOUND_STAT)
+
+    def test31_verify_movie_genre_count(self, movie_flows: MovieApiFlows):
+        re = movie_flows.get_db_categories(TITLE_KEY)
+        APIVerify.verify_values_equals(len(re),60)
