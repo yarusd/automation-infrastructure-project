@@ -46,6 +46,13 @@ NEW_REGISTER = {"name": "Liya Degel",
                 "password_confirmation": "securepass123"}
 LOGIN_INFO = { "email": "user1@test.com", "password": "123456"}
 
+DB_MOVIES_TABLE = "Movies"
+API_DB_SEARCH_DATA = {
+    "api_params": {"genre": "Action"},
+    "db_column": "genre",
+    "keyword": "Action"
+}
+
 
 
 

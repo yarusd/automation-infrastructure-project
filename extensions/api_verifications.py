@@ -12,12 +12,12 @@ class APIVerify:
         
 
     @staticmethod
-    def verify_values_not_equals(actual, unexpected, message="Values are unexpectedly equal"):
+    def verify_values_not_equals(actual, unexpected, message = "Values are unexpectedly equal"):
         assert actual != unexpected, f"{message}: {actual} == {unexpected}"
     
 
     @staticmethod
-    def verify_values_equals(actual, unexpected, message="Values are unexpectedly equal"):
+    def verify_values_equals(actual, unexpected, message = "Values are unexpectedly equal"):
         assert actual == unexpected, f"{message}: {actual} != {unexpected}"
 
 

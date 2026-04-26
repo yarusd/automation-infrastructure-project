@@ -1,4 +1,5 @@
 import json
+from typing import List, Tuple
 import allure
 from playwright.sync_api import APIRequestContext, APIResponse
 from conftest import *
@@ -92,6 +93,11 @@ class MovieApiFlows:
         response = self.api.get(MOVIES_URL,params=query)
         return response
     
+    @allure.step("Getting search results count")
+    def get_api_search_count(self, params):
+        response = self.search_for_random_keyword(params)
+        return APIActions.count(response.json())
+    
 
     @allure.step("Send multiple get a joke request")
     def send_multiple_requests(self,amount:int) -> list:
@@ -118,8 +124,26 @@ class MovieApiFlows:
         print(f"key value is : {value}")
         return value    
     
-    def get_db_categories(self,s_word):
+    @allure.step("DB: Fetching all values from column")
+    def get_db_column_values(self, column_name: str) -> List[Tuple]:        
         cursor = self.db.cursor()
-        cursor.execute(f"SELECT {s_word} FROM Movies") 
-        # return [row[0] for row in cursor.fetchall()]
+        cursor.execute(f"SELECT {column_name} FROM Movies") 
         return cursor.fetchall()
+    
+    @allure.step("DB: Getting count for search result")
+    def get_db_movies_count(self, column_name: str) -> int:
+        results = self.get_db_column_values(column_name)
+        return APIActions.count(results)
+    
+    @allure.step("DB: Filtering table by value")
+    def db_filter_by(self, column_name: str, s_value: str) -> List[Tuple]:
+        
+        query = f"SELECT *FROM Movies WHERE {column_name} = ?"
+        my_cursor = self.db.cursor()
+        my_cursor.execute(query, (s_value,))
+        return my_cursor.fetchall()
+
+    @allure.step("DB: Getting count for search result")
+    def get_db_movies_count_by_filter(self, column_name: str, s_value: str) -> int:
+        results = self.db_filter_by(column_name, s_value)
+        return APIActions.count(results)

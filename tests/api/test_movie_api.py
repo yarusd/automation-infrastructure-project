@@ -44,7 +44,7 @@ class TestMovieAPI:
     @allure.title("DDT : Combined Search: {test_name}")
     @allure.description("DDT : Verifies that filtering by multiple criteria (e.g., Title + Genre) returns correct movies or error messages.") 
     @pytest.mark.parametrize("payload, expected_status, expected_keyword, test_name", COMBINED_FILTER_SCENARIOS)
-    def test04_combined_search_logic(self, movie_flows: MovieApiFlows, payload, expected_status, expected_keyword, test_name):
+    def test04_verify_combined_search_logic(self, movie_flows: MovieApiFlows, payload, expected_status, expected_keyword, test_name):
         search_results = movie_flows.search_for_random_keyword(payload)
         APIVerify.status_code(search_results,expected_status)
         APIVerify.soft_verify_multiple_criteria(search_results.json(), expected_keyword)
@@ -53,7 +53,7 @@ class TestMovieAPI:
     @allure.title("DDT : Sorting Integrity: {test_name}")
     @allure.description("DDT : Validates that the API returns movies correctly sorted by Title, Year, or Rating according to the requested sort type.")
     @pytest.mark.parametrize("payload, status, key, sort_type, test_name", SORT_SCENARIOS)
-    def test05_sorting_integrity(self, movie_flows: MovieApiFlows, payload, status, key, sort_type, test_name):
+    def test05_verify_sorting_integrity(self, movie_flows: MovieApiFlows, payload, status, key, sort_type, test_name):
         sort_results = movie_flows.search_for_random_keyword(payload)
         APIVerify.status_code(sort_results, status)    
         APIVerify.soft_verify_sorting(sort_results.json(), key, sort_type)
@@ -302,6 +302,25 @@ class TestMovieAPI:
         delete_booking = movie_flows.delete_booked_order("")
         APIVerify.status_code(delete_booking,EXP_NOT_FOUND_STAT)
 
-    def test31_verify_movie_genre_count(self, movie_flows: MovieApiFlows):
-        re = movie_flows.get_db_categories(TITLE_KEY)
-        APIVerify.verify_values_equals(len(re),60)
+
+    # ================== DATABASE TESTS ===================== #
+
+    @allure.title("Verify Total Movie Count: API vs DB")
+    @allure.description("Ensures the total number of movies in the database matches the API total count.")
+    def test31_verify_total_movie_count(self, movie_flows: MovieApiFlows):
+        api_movies_count = movie_flows.get_movies_count()
+        db_movies_count = movie_flows.get_db_movies_count(TITLE_KEY)
+        APIVerify.verify_values_equals(db_movies_count,api_movies_count)
+
+    @allure.title("Verify Search Logic: API vs DB Cross-Check")
+    @allure.description("Compares API search results count with a direct SQL WHERE query count.")
+    def test32_verify_search_logic_in_db_and_api(self, movie_flows: MovieApiFlows):
+
+        api_count = movie_flows.get_api_search_count(API_DB_SEARCH_DATA["api_params"])
+        db_count = movie_flows.get_db_movies_count_by_filter(
+            API_DB_SEARCH_DATA["db_column"], 
+            API_DB_SEARCH_DATA["keyword"])
+        APIVerify.verify_values_equals(api_count, db_count)
+
+
+
