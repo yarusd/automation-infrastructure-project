@@ -29,7 +29,6 @@ Powered by **Playwright**, the web suite focuses on high-performance user scenar
 * **Order Management:** Specialized flows for order placement and cancellation.
 
 ### ⚙️ API & Backend Integrity
-**Target API:** [MovieTime API Service](https://movie-time-api.onrender.com/)  
 **Target AP & Documentation:** [API Documentation](https://movie-time-api.onrender.com/docs)  
 Robust validation of data integrity and server-side logic:
 * **DDT (Data-Driven Testing):** Extensive data validation using **SQLite** to compare DB records vs. API responses.
