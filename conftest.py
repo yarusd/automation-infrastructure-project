@@ -87,4 +87,35 @@ def pytest_runtest_makereport(item, call):
                 # Attach trace
                 trace_name = f"{CONFIG['TRACE_PREFIX']}_{item.name}_{timestamp}.zip"
                 trace_path = os.path.join(CONFIG['ALLURE_RESULTS_DIR'], trace_name)
+<<<<<<< Updated upstream
                 attach_trace(page, item.name, trace_path)
+=======
+                
+                try:
+                    attach_trace(page, item.name, trace_path)
+                    # Set to False so we don't try to stop it again elsewhere
+                    page._tracing_active = False 
+                except Exception as e:
+                    print(f"Failed to stop/attach trace: {e}")
+
+
+
+@pytest.fixture(scope="class")
+def mobile_setup():
+        dc = {}
+        dc['udid'] = '8dad0f967d78'
+        dc['appPackage'] = 'com.example.android.apis'
+        dc['appActivity'] = '.ApiDemos'
+        dc['platformName'] = 'android'
+        driver = webdriver.Remote('http://localhost:4724/wd/hub',dc)
+        driver.implicitly_wait(10)
+        yield driver
+        driver.quit()
+
+
+
+@pytest.fixture(scope="function")
+def mobile_flows(mobile_setup):
+    # Injecting the driver instance into the business logic layer
+    return MobileFlows(mobile_setup)
+>>>>>>> Stashed changes
